@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  frontend:
+    build: ./client
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./server
+    env_file:
+      - ./server/.env       # <--- Reads MONGODB_URI from here!
+    ports:
+      - "5000:5000"
+    depends_on:
+      - ai_engine
+    environment:
+      - AI_ENGINE_URL=http://ai_engine:8000
+      # Any other overrides can go here, but MONGODB_URI will come from .env
+    restart: always
+
+  ai_engine:
+    build: ./ai_engine
+    env_file:
+      - ./ai_engine/.env
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_ENV=production
+    restart: always
