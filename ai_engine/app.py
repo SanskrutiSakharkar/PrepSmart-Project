@@ -23,10 +23,11 @@ except Exception:
     OLLAMA_AVAILABLE = False
 
 # -----------------------------------------------------------------------------
-# Flask app and CORS: ALL ORIGINS ENABLED FOR DEV
+# Flask app and CORS: ALLOW EC2 PUBLIC IP FRONTEND
 # -----------------------------------------------------------------------------
 app = Flask(__name__)
-CORS(app)  # <--- Allows all origins and all routes (for dev)
+CORS(app, origins=["http://54.163.25.182", "http://localhost:3000", "http://localhost"], supports_credentials=True)
+# For production, replace with only your frontend's real domain.
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -34,9 +35,9 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # Load BERT once
 bert_model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# -----------------------------------------------------------------------------
-# Utility Functions (same as before)
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------
+# Utility Functions (unchanged)
+# -------------------------------------------------------------------
 TOKEN_RX = re.compile(r"\b[a-zA-Z0-9\-\+\.#]+\b")
 def tokenize_words(text: str) -> List[str]:
     return TOKEN_RX.findall(text.lower())
@@ -309,7 +310,10 @@ def analyze_audio_endpoint():
         )
 
         return jsonify({
-            "metrics": metrics,
+            "emotion": emotion,
+            "tempo": tempo,
+            "energy": energy,
+            "pitch": pitch,
             "suggestions": suggestions
         })
     except Exception as e:
@@ -320,7 +324,7 @@ def analyze_audio_endpoint():
 # Ollama behavioral questions endpoint
 # -----------------------------------------------------------------------------
 @app.route("/ollama/behavioral-questions", methods=["GET"])
-@cross_origin()  # Extra CORS guarantee on this endpoint!
+@cross_origin()
 def generate_behavioral_questions():
     prompt = "Generate 5 unique STAR-format behavioral interview questions for technology job interviews. Return ONLY a numbered list."
     try:
@@ -351,4 +355,4 @@ def health():
     return jsonify({"ok": True})
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8000)
+    app.run(host="0.0.0.0", port=8000)
