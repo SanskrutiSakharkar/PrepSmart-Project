@@ -1,19 +1,26 @@
-# Use Python slim image
+# ========================
+# ai_engine/Dockerfile
+# ========================
+
+# Use a lightweight Python image
 FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy all files in ai_engine folder
-COPY . .
+# Copy only requirements first to leverage Docker cache
+COPY requirements.txt .
 
-# Install Python dependencies directly
-RUN pip install --no-cache-dir flask flask-cors librosa numpy scikit-learn sentence-transformers werkzeug
+# Install dependencies (will only rerun if requirements.txt changes)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
 
 # Create uploads folder
 RUN mkdir -p uploads
 
-# Expose port 8000
+# Expose Flask port
 EXPOSE 8000
 
 # Start the Flask app
