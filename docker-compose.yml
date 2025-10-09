@@ -7,24 +7,25 @@ services:
       - "80:80"
     depends_on:
       - backend
+    restart: always
 
   backend:
     build: ./server
     env_file:
-      - ./server/.env       # <--- Reads MONGODB_URI from here!
+      - ./server/.env       # Reads MONGODB_URI and other backend variables
     ports:
       - "5000:5000"
     depends_on:
       - ai_engine
     environment:
       - AI_ENGINE_URL=http://ai_engine:8000
-      # Any other overrides can go here, but MONGODB_URI will come from .env
+      # Additional overrides can go here
     restart: always
 
   ai_engine:
     build: ./ai_engine
     env_file:
-      - ./ai_engine/.env
+      - ./ai_engine/.env    # AI engine environment variables
     ports:
       - "8000:8000"
     environment:
