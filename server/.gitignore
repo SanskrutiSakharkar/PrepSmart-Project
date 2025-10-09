@@ -1,0 +1,5 @@
+.env
+.venv/
+ai_engine/.venv/
+venv/
+node_modules

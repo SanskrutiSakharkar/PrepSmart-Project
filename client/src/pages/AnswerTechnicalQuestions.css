@@ -1,0 +1,152 @@
+.answertech-container {
+  max-width: 680px;
+  margin: 42px auto 44px auto;
+  padding: 34px 14px 70px 14px;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 7px 32px #2b2d4212;
+}
+
+.answertech-title {
+  color: #2b2d42;
+  font-weight: 800;
+  font-size: 1.7rem;
+  margin-bottom: 22px;
+  text-align: center;
+  letter-spacing: -1.2px;
+}
+
+.answertech-sections {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.answertech-tab {
+  background: #edf2f4;
+  color: #2b2d42;
+  border: 1.4px solid #8d99ae3c;
+  border-radius: 99px;
+  padding: 8px 32px;
+  font-size: 1.07rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.13s, color 0.14s, border 0.14s;
+}
+.answertech-tab.active,
+.answertech-tab:focus,
+.answertech-tab:hover {
+  background: linear-gradient(90deg, #ef233c, #d90429);
+  color: #fff;
+  border: 1.7px solid #ef233c80;
+}
+
+.answertech-error {
+  background: #ffe5e7;
+  color: #d90429;
+  border-radius: 8px;
+  padding: 11px 19px;
+  font-weight: 700;
+  font-size: 1.03rem;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.answertech-card {
+  background: #f9fafb;
+  border-radius: 13px;
+  padding: 24px 21px 20px 21px;
+  box-shadow: 0 2px 7px #8d99ae0d;
+  margin-bottom: 20px;
+}
+
+.answertech-btn {
+  background: linear-gradient(90deg, #ef233c, #d90429);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.04rem;
+  border-radius: 99px;
+  padding: 8px 24px;
+  border: none;
+  cursor: pointer;
+  margin-right: 7px;
+  margin-bottom: 0;
+  transition: background 0.13s;
+}
+.answertech-btn:hover,
+.answertech-btn:focus {
+  background: linear-gradient(90deg, #d90429, #ef233c);
+}
+
+.answertech-save {
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.01rem;
+  border-radius: 99px;
+  padding: 7px 20px;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-bottom: 0;
+  transition: background 0.13s;
+}
+.answertech-save:hover,
+.answertech-save:focus {
+  background: linear-gradient(90deg, #38bdf8, #2563eb);
+}
+
+.answertech-textarea {
+  width: 100%;
+  min-height: 62px;
+  font-size: 1.05rem;
+  border-radius: 8px;
+  border: 1.4px solid #8d99ae77;
+  padding: 11px 14px;
+  margin-top: 7px;
+  margin-bottom: 7px;
+  background: #edf2f4;
+  resize: vertical;
+  outline: none;
+  transition: border 0.17s, background 0.12s;
+}
+.answertech-textarea:focus {
+  border: 1.7px solid #ef233c;
+  background: #fff;
+}
+
+.answertech-feedback {
+  background: #edf2f4;
+  border-radius: 8px;
+  padding: 10px 15px;
+  color: #2b2d42;
+  font-size: 1.04rem;
+  margin-top: 8px;
+  margin-bottom: 3px;
+  border: 1.2px solid #8d99ae33;
+}
+
+@media (max-width: 820px) {
+  .answertech-container {
+    padding: 10px 3vw 30px 3vw;
+    max-width: 99vw;
+  }
+}
+.back-button-row {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 38px;
+  margin-bottom: -22px;   /* brings card up closer to button */
+  margin-left: 40px;      /* aligns with card left edge, adjust as needed */
+  z-index: 10;
+}
+
+@media (max-width: 900px) {
+  .back-button-row {
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: -8px;
+  }
+}

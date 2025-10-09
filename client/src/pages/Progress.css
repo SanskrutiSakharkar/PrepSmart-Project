@@ -1,0 +1,229 @@
+.progress-outer {
+  min-height: 100vh;
+  background: #f5f7fa;
+  padding: 0;
+}
+
+/* Back button (matches your design, responsive) */
+.progress-back-btn {
+  margin-top: 30px;
+  margin-left: 40px;
+  margin-bottom: -10px;
+  background: #fff;
+  border: 2.5px solid #ef2344;
+  color: #ef2344;
+  font-size: 1.18rem;
+  border-radius: 26px;
+  padding: 8px 28px 8px 18px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #ffb8c46c;
+  transition: background 0.12s, color 0.12s, border 0.14s;
+}
+
+.progress-back-btn:hover {
+  background: #ef2344;
+  color: #fff;
+  border-color: #ef2344;
+}
+
+@media (max-width: 650px) {
+  .progress-back-btn {
+    margin-left: 10px;
+    margin-top: 16px;
+    font-size: 1rem;
+    padding: 7px 18px 7px 10px;
+  }
+}
+
+.progress-dashboard {
+  max-width: 950px;
+  margin: 36px auto 24px auto;
+  padding: 24px 20px 30px;
+  background: #f8fafc;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px 0 #38bdf830;
+  min-height: 90vh;
+}
+
+.progress-dashboard h1 {
+  font-size: 2.1rem;
+  margin-bottom: 0.35rem;
+  font-weight: 800;
+  color: #14213d;
+}
+.progress-subtitle {
+  font-size: 1.18rem;
+  margin-bottom: 2rem;
+  color: #2563eb;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.growth-cards {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+  margin-bottom: 34px;
+}
+.growth-card {
+  background: #fff;
+  min-width: 172px;
+  flex: 1 0 180px;
+  border-radius: 13px;
+  box-shadow: 0 2px 6px #e0eaff44;
+  padding: 20px 16px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  transition: box-shadow .18s;
+  border: 1.6px solid #f1f5f9;
+  position: relative;
+}
+.growth-card:hover {
+  box-shadow: 0 6px 20px #38bdf877;
+}
+.card-icon {
+  margin-bottom: 7px;
+}
+.growth-card h3 {
+  font-size: 1.14rem;
+  margin: 0 0 2px 0;
+  font-weight: 700;
+  color: #14213d;
+  letter-spacing: -0.01em;
+}
+.card-value {
+  font-size: 1.36rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #22223b;
+  letter-spacing: 0.02em;
+}
+.growth-card .up {
+  color: #10b981;
+  font-weight: 700;
+  font-size: 1.03rem;
+}
+.growth-card .down {
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 1.03rem;
+}
+.card-help {
+  margin-top: 7px;
+  font-size: 0.97rem;
+  color: #516;
+  opacity: 0.76;
+  line-height: 1.2;
+}
+
+.chart-section {
+  background: #fff;
+  border-radius: 13px;
+  box-shadow: 0 2px 6px #e0eaff44;
+  padding: 18px 24px 14px;
+  margin-bottom: 25px;
+}
+.chart-section h2 {
+  margin: 0 0 4px 0;
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: #2b3141;
+}
+.chart-sub {
+  color: #667;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+.feedback-log {
+  margin: 24px 0 0 0;
+  background: #fff;
+  border-radius: 13px;
+  box-shadow: 0 2px 6px #e0eaff44;
+  padding: 22px 24px 15px;
+}
+.feedback-log h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.13rem;
+  font-weight: 700;
+  color: #14213d;
+}
+.feedback-intro {
+  font-size: 1rem;
+  color: #2563eb;
+  margin-bottom: 13px;
+  opacity: 0.86;
+}
+
+.feedback-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feedback-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.3rem;
+  background: #f1f5f9;
+  padding: 13px 18px;
+  border-radius: 8px;
+  margin-bottom: 1.1rem;
+  box-shadow: 0 1px 5px #38bdf813;
+  border-left: 4px solid #38bdf8;
+  font-size: 1.06rem;
+}
+
+.feedback-date {
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.99rem;
+  font-weight: 600;
+  border-radius: 16px;
+  padding: 2px 14px 2px 12px;
+  margin-right: 13px;
+  min-width: 94px;
+  text-align: center;
+  white-space: nowrap;
+}
+.feedback-text {
+  flex: 1;
+  line-height: 1.45;
+  color: #20294c;
+}
+.feedback-none {
+  color: #ef4444;
+  padding: 13px 0 0 4px;
+  font-size: 1.04rem;
+}
+
+@media (max-width: 850px) {
+  .progress-dashboard {
+    padding: 8px 3vw 24px;
+    max-width: 100vw;
+  }
+  .growth-cards {
+    flex-direction: column;
+    gap: 13px;
+  }
+  .growth-card {
+    min-width: unset;
+    padding: 17px 10px 13px;
+  }
+  .chart-section, .feedback-log {
+    padding: 15px 6vw 11px;
+  }
+}
+
+.progress-loading {
+  font-size: 1.4rem;
+  text-align: center;
+  color: #2563eb;
+  margin: 60px 0;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}

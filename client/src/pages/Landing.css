@@ -1,0 +1,146 @@
+body, html {
+  font-family: 'Inter', Arial, sans-serif;
+  background: #f1f5f9;
+  margin: 0;
+  padding: 0;
+}
+.landing-bg {
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+.landing-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 64px 20px 64px;
+  background: #fff;
+  border-radius: 0 0 38px 38px;
+  box-shadow: 0 8px 36px #b1b1b123;
+  margin-bottom: 34px;
+}
+.landing-logo {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #24263a;
+  letter-spacing: -1.5px;
+  cursor: pointer;
+}
+.landing-navbar nav button {
+  background: none;
+  border: none;
+  font-size: 1.24rem;
+  font-weight: 600;
+  margin-left: 32px;
+  color: #262a3d;
+  cursor: pointer;
+  transition: color 0.18s;
+  padding: 0 3px;
+}
+.landing-navbar nav button:hover,
+.landing-navbar nav button:focus {
+  color: #b80022;
+}
+
+.landing-hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+}
+.landing-hero-card {
+  background: #fff;
+  border-radius: 48px;
+  box-shadow: 0 8px 52px 0 #db133c15;
+  padding: 70px 48px 48px 48px;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 44px auto;
+}
+.landing-hero-card h1 {
+  font-size: 3.2rem;
+  color: #222336;
+  font-weight: 700;
+  margin-bottom: 22px;
+}
+.landing-hero-card p {
+  color: #8d98ac;
+  font-size: 1.45rem;
+  margin-bottom: 36px;
+  font-weight: 400;
+}
+.hero-btn {
+  padding: 18px 52px;
+  border-radius: 38px;
+  background: linear-gradient(92deg, #c60026 0%, #ee1736 100%);
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 8px 32px #db133c22;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background 0.18s, box-shadow 0.15s;
+  letter-spacing: 0.5px;
+}
+.hero-btn:hover, .hero-btn:focus {
+  background: linear-gradient(92deg, #b80022 0%, #d90c32 100%);
+  box-shadow: 0 8px 44px #b8002222;
+}
+
+/* Features Section */
+.landing-features {
+  padding: 0 0 80px 0;
+  text-align: center;
+}
+.landing-features h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #222336;
+  margin-bottom: 40px;
+  margin-top: 20px;
+}
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+}
+.feature-card {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 4px 28px 0 #db133c10;
+  padding: 38px 32px 24px 32px;
+  min-width: 240px;
+  max-width: 290px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: box-shadow 0.18s;
+}
+.feature-card:hover {
+  box-shadow: 0 8px 44px 0 #b8002220;
+}
+.feature-icon {
+  font-size: 2.6rem;
+  color: #b80022;
+  margin-bottom: 18px;
+}
+.feature-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 9px;
+  color: #24263a;
+}
+.feature-card p {
+  font-size: 1.05rem;
+  color: #717e96;
+  font-weight: 400;
+}
+
+/* Footer */
+.landing-footer {
+  text-align: center;
+  padding: 28px 0 16px 0;
+  color: #adb3bb;
+  font-size: 1.04rem;
+}

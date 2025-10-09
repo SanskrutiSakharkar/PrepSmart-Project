@@ -1,0 +1,265 @@
+.codinground-container {
+  max-width: 1050px;
+  margin: 42px auto 40px auto;
+  padding: 34px 18px 70px 18px;
+  background: #fff;
+  border-radius: 26px;
+  box-shadow: 0 7px 32px #2b2d4212;
+}
+
+.codinground-title {
+  color: #2b2d42;
+  font-weight: 800;
+  font-size: 2.1rem;
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+.codinground-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 23px;
+  justify-content: flex-start;
+}
+
+.codinground-btn {
+  background: #edf2f4;
+  color: #2b2d42;
+  border: 1.6px solid #8d99ae40;
+  border-radius: 99px;
+  padding: 8px 18px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.14s, color 0.13s, border 0.13s;
+}
+.codinground-btn.active,
+.codinground-btn:hover,
+.codinground-btn:focus {
+  background: linear-gradient(90deg, #ef233c, #d90429);
+  color: #fff;
+  border: 1.6px solid #ef233c80;
+}
+.codinground-format {
+  background: #8d99ae22;
+  color: #2b2d42;
+}
+.codinground-generate {
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+  color: #fff;
+  font-weight: 700;
+  margin-left: 7px;
+}
+.codinground-save {
+  background: linear-gradient(90deg, #10b981, #38bdf8);
+  color: #fff;
+  font-weight: 700;
+  margin-left: 7px;
+}
+.codinground-submit {
+  background: linear-gradient(90deg, #ef233c, #d90429);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 11px 32px;
+  margin-top: 14px;
+  margin-bottom: 12px;
+  border-radius: 99px;
+  box-shadow: 0 3px 12px #ef233c18;
+  border: none;
+}
+.codinground-submit:hover {
+  background: linear-gradient(90deg, #d90429, #ef233c);
+}
+
+.codinground-label {
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #2b2d42;
+  margin-left: 6px;
+}
+
+.codinground-select {
+  border: 1.4px solid #8d99ae55;
+  border-radius: 7px;
+  padding: 5px 11px;
+  margin-left: 4px;
+  font-size: 1.01rem;
+  background: #f8fafc;
+  color: #2b2d42;
+  outline: none;
+}
+
+.codinground-questionselect {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.codinground-desc {
+  font-size: 1.08rem;
+  color: #232e3c;
+  margin-bottom: 10px;
+  background: #edf2f4;
+  border-radius: 7px;
+  padding: 12px 18px;
+  min-height: 42px;
+}
+
+.codinground-testcases {
+  background: #f6f9fc;
+  border-radius: 9px;
+  padding: 13px 18px;
+  margin-bottom: 13px;
+  border: 1.1px solid #8d99ae19;
+  font-size: 1.03rem;
+}
+.codinground-testcases ul {
+  padding-left: 19px;
+}
+.codinground-pre {
+  display: inline;
+  background: #edf2f4;
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-family: "Fira Mono", "Menlo", "Monaco", monospace;
+  font-size: 0.97em;
+  color: #2b2d42;
+}
+
+form {
+  margin-bottom: 14px;
+}
+
+/* Output & Suggestions */
+.codinground-output {
+  background: #f9fafb;
+  border-radius: 13px;
+  padding: 16px 18px 16px 18px;
+  margin: 18px 0 14px 0;
+  font-size: 1.03rem;
+}
+.codinground-output h4 {
+  margin: 0 0 6px 0;
+  color: #2b2d42;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.codinground-suggestions {
+  margin: 6px 0 0 0;
+  padding-left: 19px;
+  color: #444;
+  font-size: 0.98rem;
+}
+
+/* History Section */
+.codinground-history {
+  margin-top: 32px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 3px 13px #8d99ae16;
+  padding: 22px 21px 14px 21px;
+  font-size: 1.04rem;
+}
+.codinground-history h4 {
+  color: #2b2d42;
+  font-size: 1.11rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.codinground-historyitem {
+  margin-bottom: 13px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #edf2f4;
+}
+.codinground-historyitem {
+  padding: 14px 0 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+  display: block;
+}
+
+.codinground-history-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.codinground-history-delete {
+  background: #d90429;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 16px 0 #ef233c12;
+  transition: background 0.17s;
+}
+.codinground-history-delete:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .codinground-container {
+    padding: 14px 2vw 50px 2vw;
+    max-width: 99vw;
+  }
+}
+.codinground-suggestions-card {
+  background: #f8fafc;
+  border-radius: 15px;
+  box-shadow: 0 3px 13px #8d99ae16;
+  padding: 21px 20px 13px 20px;
+  font-size: 1.08rem;
+  margin: 16px 0 0 0;
+  color: #1e293b;
+}
+.codinground-suggestions-card h4 {
+  margin-top: 0;
+  font-weight: 700;
+  color: #2563eb;
+  font-size: 1.13rem;
+  margin-bottom: 7px;
+}
+.codinground-suggestions-list {
+  margin: 0;
+  padding-left: 24px;
+  color: #444;
+  font-size: 1.01rem;
+}
+.codinground-header-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  /* Place the back button neatly inside the card, not at extreme left of screen */
+}
+
+.back-button {
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 2px;
+}
+.back-button-row {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 38px;
+  margin-bottom: -22px;   /* bring the card up closer to the button */
+  margin-left: 40px;      /* aligns back button with card's left edge */
+  z-index: 10;
+}
+
+/* Optional: adjust on mobile */
+@media (max-width: 900px) {
+  .back-button-row {
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: -8px;
+  }
+}
+

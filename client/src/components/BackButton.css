@@ -1,0 +1,29 @@
+.back-btn {
+  display: inline-block;
+  background: #fff;
+  border: 2px solid #ef233c;
+  color: #ef233c;
+  font-weight: 700;
+  font-size: 1.15rem;
+  border-radius: 2em;
+  padding: 12px 28px;
+  margin: 18px 0 22px 18px;
+  box-shadow: 0 3px 13px #ef233c15;
+  cursor: pointer;
+  outline: none;
+  transition: 
+    background 0.15s,
+    color 0.15s,
+    box-shadow 0.15s;
+}
+.back-btn:hover, .back-btn:focus {
+  background: #fff0f3;
+  color: #d90429;
+  box-shadow: 0 3px 20px #ef233c26;
+}
+.back-arrow {
+  font-size: 1.3em;
+  margin-right: 7px;
+  font-weight: 600;
+  vertical-align: -1px;
+}
