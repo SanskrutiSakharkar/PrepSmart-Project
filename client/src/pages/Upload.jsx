@@ -42,11 +42,11 @@ export default function Upload() {
       formData.append("resume", resume);
       formData.append("jobDesc", jobDesc);
 
-      await axios.post("http://localhost:5000/api/resume/upload", formData, {
+      await axios.post("/api/resume/upload", formData, {
         headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` }
       });
 
-      const textRes = await axios.get("http://localhost:5000/api/resume/texts", {
+      const textRes = await axios.get("/api/resume/texts", {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -70,7 +70,7 @@ export default function Upload() {
     setPersonalized({ suggestions: [], missing: [] });
 
     try {
-      const res = await axios.get("http://localhost:5000/api/resume/run-ai-match", {
+      const res = await axios.get("/api/resume/run-ai-match", {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -88,7 +88,7 @@ export default function Upload() {
 
       // Save feedback in backend
       await axios.post(
-        "http://localhost:5000/api/feedback/save",
+        "/api/feedback/save",
         {
           matchScore,
           matchedKeywords,

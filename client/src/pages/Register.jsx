@@ -16,7 +16,8 @@ export default function Register() {
     e.preventDefault();
     setStatus("");
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
+      // Use RELATIVE URL for API call
+      const res = await axios.post("/api/auth/register", {
         name, email, password
       });
       if (res.data?.token) {

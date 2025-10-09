@@ -63,15 +63,17 @@ export default function VoiceFeedback() {
       const formData = new FormData();
       formData.append("audio", file);
 
-      const response = await axios.post("http://localhost:8000/analyze/audio", formData, {
+      // --- CHANGE: Use relative path (no http://localhost:8000) ---
+      const response = await axios.post("/analyze/audio", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       setAnalysis(response.data);
       setStatus("Analysis successful.");
 
+      // --- CHANGE: Use relative path (no http://localhost:5000) ---
       await axios.post(
-        "http://localhost:5000/api/voice-feedback/save",
+        "/api/voice-feedback/save",
         { ...response.data, audioFileName: file.name },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -83,7 +85,8 @@ export default function VoiceFeedback() {
 
   const handleGenerateQuestions = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/ollama/behavioral-questions");
+      // --- CHANGE: Use relative path (no http://localhost:8000) ---
+      const res = await axios.get("/ollama/behavioral-questions");
       if (res.data.questions) {
         // Clean out unwanted JSON-like formatting
         const cleaned = res.data.questions.map(q =>
