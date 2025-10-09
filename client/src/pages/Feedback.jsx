@@ -45,7 +45,7 @@ export default function Feedback() {
   // Generate AI questions (fetch from backend)
   const generateQuestions = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/ollama/behavioral-questions");
+      const res = await axios.get("/ollama/behavioral-questions");
       if (res.data.questions) {
         setQuestions(res.data.questions);
         setSelectedQuestion(res.data.questions[0]);
