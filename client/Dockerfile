@@ -1,14 +1,14 @@
-# client/Dockerfile
-FROM node:18-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# Serve with nginx
+# Serve pre-built React frontend with nginx
 FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy the production build folder from your EC2 project directory
+COPY build/ /usr/share/nginx/html
+
+# Copy custom Nginx config if you have one
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
 EXPOSE 80
+
+# Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
