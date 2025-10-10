@@ -76,7 +76,7 @@ router.post('/ai', auth, async (req, res) => {
     `;
 
     const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-      model: 'llama3',
+      model: 'llama2',
       prompt
     });
 

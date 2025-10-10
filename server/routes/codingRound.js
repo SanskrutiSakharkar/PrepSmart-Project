@@ -120,7 +120,7 @@ Only output the JSON object, no extra text.
 `;
 
   try {
-    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, { model: "llama3", prompt });
+    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, { model: "llama2", prompt });
     let aiJSON = null;
     try {
       const match = ollamaRes.data.response.match(/\{[\s\S]*\}/);

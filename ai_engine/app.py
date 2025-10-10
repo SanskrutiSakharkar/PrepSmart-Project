@@ -295,7 +295,7 @@ def generate_behavioral_questions():
                 "Tell me about a time you received constructive criticism."
             ]})
         print("Calling Ollama for questions...")
-        response = ollama.generate(model="llama3", prompt=prompt)
+        response = ollama.generate(model="llama2", prompt=prompt)
         raw_output = response.get("response","")
         questions = [line.strip(" -0123456789.") for line in raw_output.split("\n") if line.strip()]
         return jsonify({"questions": questions})

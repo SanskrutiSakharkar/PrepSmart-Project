@@ -25,7 +25,7 @@ router.post('/generate', async (req, res) => {
     const prompt = `Generate a technical interview question for software engineering freshers, focused on ${topic}. Do not provide an answer, only the question.`;
 
     const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-      model: "llama3",
+      model: "llama2",
       prompt
     });
 

@@ -30,7 +30,7 @@ router.post('/feedback', async (req, res) => {
 
     // POST to Ollama (normal JSON, no streaming)
     const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-      model: "llama3",
+      model: "llama2",
       prompt
     });
 
