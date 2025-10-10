@@ -43,6 +43,7 @@ services:
   ollama:
     image: ollama/ollama
     container_name: ollama
+    # Remove this line if you want Ollama to be accessible **only** inside Docker:
     ports:
       - "11434:11434"
     volumes:
