@@ -16,7 +16,7 @@ router.post('/feedback', async (req, res) => {
       Respond in 3-4 lines.
     `;
     const ollamaRes = await axios.post(
-      'http://localhost:11434/api/generate',
+      'http://ollama:11434/api/generate',
       { model: "llama3", prompt },
       { responseType: 'stream' }
     );

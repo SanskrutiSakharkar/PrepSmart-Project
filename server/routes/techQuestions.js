@@ -22,7 +22,7 @@ router.post('/generate', async (req, res) => {
     const { topic } = req.body;
     const prompt = `Generate a technical interview question for software engineering freshers, focused on ${topic}. Do not provide an answer, only the question.`;
     const ollamaRes = await axios.post(
-      'http://localhost:11434/api/generate',
+      'http://ollama:11434/api/generate',
       { model: "llama3", prompt },
       { responseType: 'stream' }
     );
