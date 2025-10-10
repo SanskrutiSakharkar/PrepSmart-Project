@@ -12,6 +12,11 @@ router.post('/feedback', async (req, res) => {
   try {
     const { question, answer, topic } = req.body;
 
+    // Input validation
+    if (!question || !answer || !topic) {
+      return res.status(400).json({ error: "Missing question, answer, or topic" });
+    }
+
     const prompt = `
       You are an expert interviewer for ${topic}.
       Here is the technical question: "${question}"
@@ -23,18 +28,26 @@ router.post('/feedback', async (req, res) => {
       Respond in 3-4 lines.
     `;
 
-    // Use JSON response instead of streaming
+    // POST to Ollama (normal JSON, no streaming)
     const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
       model: "llama3",
       prompt
     });
 
     const feedback = ollamaRes.data?.response || "AI feedback not available.";
+
     res.json({ feedback: feedback.trim() });
 
   } catch (err) {
     console.error("Ollama feedback error:", err.message || err);
-    res.status(500).json({ error: 'Failed to get feedback.' });
+
+    // Optional: log Ollama response if present for debugging
+    if (err.response) {
+      console.error("Ollama response status:", err.response.status);
+      console.error("Ollama response data:", err.response.data);
+    }
+
+    res.status(500).json({ error: 'Failed to get feedback from Ollama.' });
   }
 });
 
