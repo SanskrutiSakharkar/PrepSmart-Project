@@ -1,4 +1,3 @@
-// server/routes/feedbackRoutes.js
 const express = require('express');
 const auth = require('../middleware/authMiddleware');
 const FeedbackResult = require('../models/FeedbackResult');
@@ -7,9 +6,7 @@ const router = express.Router();
 
 /**
  * POST /api/feedback/save
- * Body can include any of:
- *   matchScore, sentiment, emotion, fillerWords, keywordsMatched, missingKeywords, context
- * Returns: { suggestions, savedId }
+ * Body: { matchScore, sentiment, emotion, fillerWords, keywordsMatched, missingKeywords, suggestions, context }
  */
 router.post('/save', auth, async (req, res) => {
   try {
@@ -20,17 +17,9 @@ router.post('/save', auth, async (req, res) => {
       fillerWords,
       keywordsMatched = [],
       missingKeywords = [],
+      suggestions = [],
       context = 'combined'
     } = req.body;
-
-    const suggestions = generateFeedback({
-      matchScore,
-      sentiment,
-      emotion,
-      fillerCount: fillerWords,
-      keywords: keywordsMatched,
-      missingKeywords
-    });
 
     const saved = await FeedbackResult.create({
       userId: req.user.id,

@@ -74,17 +74,38 @@ export default function Upload() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      setAIResult(res.data.result || "AI Match complete!");
+      // Unified handling for both JSON and string result
+      let matchScore = null;
+      let matchedKeywords = [];
+      let aiResultString = "";
+
+      // Modern (JSON) format
+      if (typeof res.data === "object" && res.data.match_score !== undefined) {
+        matchScore = res.data.match_score;
+        matchedKeywords = res.data.diagnostics?.overlap_keywords || [];
+        aiResultString = `AI Match Score: ${matchScore}%\nMatched Keywords: ${matchedKeywords.join(", ")}`;
+      } 
+      // Legacy (string) format
+      else if (typeof res.data.result === "string") {
+        aiResultString = res.data.result;
+        const scoreMatch = aiResultString.match(/AI Match Score:\s*(\d+)%/);
+        matchScore = scoreMatch ? parseInt(scoreMatch[1], 10) : null;
+        // Fallback for matchedKeywords if backend does not provide as array
+        const kwMatch = aiResultString.match(/Matched Keywords: (.*)/);
+        matchedKeywords = kwMatch ? kwMatch[1].split(",").map(k => k.trim()) : [];
+      }
+
+      setAIResult({
+        result: aiResultString,
+        matchScore,
+        matchedKeywords
+      });
 
       let suggestionsResult = { suggestions: [], missing: [] };
       if (resumeText && jdText) {
         suggestionsResult = getPersonalizedResumeSuggestions(resumeText, jdText);
         setPersonalized(suggestionsResult);
       }
-
-      const scoreMatch = res.data.result.match(/AI Match Score:\s*(\d+)%/);
-      const matchScore = scoreMatch ? parseInt(scoreMatch[1], 10) : null;
-      const matchedKeywords = res.data.matchedKeywords || [];
 
       // Save feedback in backend
       await axios.post(
@@ -102,7 +123,7 @@ export default function Upload() {
 
       setStatus("Feedback saved successfully!");
     } catch (err) {
-      setAIResult("Failed to run AI match.");
+      setAIResult({ result: "Failed to run AI match." });
       console.error(err);
     } finally {
       setRunningAI(false);
@@ -112,10 +133,18 @@ export default function Upload() {
   // --- Render AI Feedback ---
   const renderAIFeedback = () => {
     if (!aiResult) return null;
-    const scoreMatch = aiResult.match(/AI Match Score:\s*(\d+)%/);
-    const keywordsMatch = aiResult.match(/Matched Keywords: (.*)/);
-    const score = scoreMatch ? scoreMatch[1] : null;
-    const keywords = keywordsMatch ? keywordsMatch[1] : "";
+
+    // Extract values (robust for both string & object)
+    const score = aiResult.matchScore !== undefined ? aiResult.matchScore : (() => {
+      const scoreMatch = (aiResult.result || "").match(/AI Match Score:\s*(\d+)%/);
+      return scoreMatch ? scoreMatch[1] : null;
+    })();
+
+    let keywords = aiResult.matchedKeywords || [];
+    if (!keywords.length && typeof aiResult.result === "string") {
+      const kwMatch = aiResult.result.match(/Matched Keywords: (.*)/);
+      keywords = kwMatch ? kwMatch[1].split(",").map(k => k.trim()) : [];
+    }
 
     let scoreClass = "ai-score";
     if (score) {
@@ -134,13 +163,12 @@ export default function Upload() {
           Matched Keywords:
           <div className="ai-keywords-list">
             {keywords
-              .split(",")
-              .filter((k) => k.trim())
+              .filter((k) => k)
               .slice(0, 20)
               .map((kw, i) => (
-                <span key={i} className="ai-keyword">{kw.trim()}</span>
+                <span key={i} className="ai-keyword">{kw}</span>
               ))}
-            {keywords.split(",").length > 20 && <span className="ai-keyword">...</span>}
+            {keywords.length > 20 && <span className="ai-keyword">...</span>}
           </div>
         </div>
       </div>
