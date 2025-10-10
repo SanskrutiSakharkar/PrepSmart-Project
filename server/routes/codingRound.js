@@ -6,7 +6,7 @@ const { runJudge0 } = require('../utils/judge0');
 const axios = require('axios');
 
 const router = express.Router();
-const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://ollama:11434';
 
 // Get all questions for a section
 router.get('/questions', authenticate, async (req, res) => {
