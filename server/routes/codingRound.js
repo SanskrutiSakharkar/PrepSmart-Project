@@ -8,7 +8,7 @@ const axios = require('axios');
 const router = express.Router();
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 
-// --- Get all questions for a section ---
+// Get all questions for a section
 router.get('/questions', authenticate, async (req, res) => {
   const { section } = req.query;
   try {
@@ -20,7 +20,7 @@ router.get('/questions', authenticate, async (req, res) => {
   }
 });
 
-// --- Submit code for grading ---
+// Submit code for grading
 router.post('/submit', authenticate, async (req, res) => {
   const { questionId, code, language } = req.body;
   const userId = req.user.id;
@@ -70,7 +70,7 @@ router.post('/submit', authenticate, async (req, res) => {
   }
 });
 
-// --- Get history ---
+// Get history
 router.get('/history', authenticate, async (req, res) => {
   const userId = req.user.id;
   try {
@@ -82,7 +82,7 @@ router.get('/history', authenticate, async (req, res) => {
   }
 });
 
-// --- Delete a submission ---
+// Delete a submission
 router.delete('/history/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
@@ -96,7 +96,7 @@ router.delete('/history/:id', authenticate, async (req, res) => {
   }
 });
 
-// --- AI Question Generation with Ollama ---
+// AI question generation
 router.post('/ai-question', authenticate, async (req, res) => {
   const { section, difficulty } = req.body;
   const sectionMap = {
@@ -106,7 +106,7 @@ router.post('/ai-question', authenticate, async (req, res) => {
   };
   const language = sectionMap[section] || "Python";
 
-  const ollamaPrompt = `
+  const prompt = `
 Generate a ${difficulty} ${language} coding interview problem as a JSON object with these keys:
 {
   "title": "...",
@@ -120,11 +120,7 @@ Only output the JSON object, no extra text.
 `;
 
   try {
-    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-      model: "llama3",
-      prompt: ollamaPrompt
-    });
-
+    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, { model: "llama3", prompt });
     let aiJSON = null;
     try {
       const match = ollamaRes.data.response.match(/\{[\s\S]*\}/);
@@ -132,7 +128,6 @@ Only output the JSON object, no extra text.
     } catch (e) {
       return res.status(500).json({ error: "Failed to parse Ollama response." });
     }
-
     res.json({ question: aiJSON });
   } catch (err) {
     console.error("Ollama question generation error:", err.message || err);
@@ -140,7 +135,7 @@ Only output the JSON object, no extra text.
   }
 });
 
-// --- Save AI-Generated Question ---
+// Save AI question
 router.post('/save-ai-question', authenticate, async (req, res) => {
   try {
     const q = req.body.question;
