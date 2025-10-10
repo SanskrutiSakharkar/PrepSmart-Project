@@ -15,9 +15,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Optional: Ollama for question generation
 try:
     import ollama
-    OLLAMA_HOST = os.environ.get("OLLAMA_URL", "http://172.31.18.109:11434")
+    OLLAMA_HOST = os.environ.get("OLLAMA_URL", "http://ollama:11434")
     if not getattr(ollama, "BASE_URL", None):
         ollama.BASE_URL = OLLAMA_HOST
+    OLLAMA_AVAILABLE = True
 except Exception:
     OLLAMA_AVAILABLE = False
 
