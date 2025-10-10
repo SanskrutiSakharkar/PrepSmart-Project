@@ -2,15 +2,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install build tools and Rust for transformers/tokenizers
-RUN apt-get update && \
-    apt-get install -y build-essential curl && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
-    export PATH="$HOME/.cargo/bin:$PATH" && \
-    rm -rf /var/lib/apt/lists/*
+# Install only required system libs
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    libsndfile1 \
+ && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
+# Upgrade pip, install heavy NLP deps (may take a while!)
 RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
