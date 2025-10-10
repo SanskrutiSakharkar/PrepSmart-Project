@@ -19,6 +19,7 @@ try:
     if not getattr(ollama, "BASE_URL", None):
         ollama.BASE_URL = OLLAMA_HOST
     OLLAMA_AVAILABLE = True
+    print("Using Ollama base URL:", ollama.BASE_URL)
 except Exception:
     OLLAMA_AVAILABLE = False
 
