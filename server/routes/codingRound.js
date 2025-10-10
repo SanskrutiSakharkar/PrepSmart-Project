@@ -6,6 +6,7 @@ const { runJudge0 } = require('../utils/judge0');
 const axios = require('axios');
 
 const router = express.Router();
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 
 // --- Get all questions for a section ---
 router.get('/questions', authenticate, async (req, res) => {
@@ -14,7 +15,7 @@ router.get('/questions', authenticate, async (req, res) => {
     const questions = await CodingQuestion.find({ section });
     res.json(questions);
   } catch (err) {
-    console.error(err);
+    console.error("Fetch coding questions error:", err);
     res.status(500).json({ error: "Failed to fetch questions" });
   }
 });
@@ -76,7 +77,7 @@ router.get('/history', authenticate, async (req, res) => {
     const submissions = await CodingSubmission.find({ userId }).populate('questionId');
     res.json(submissions);
   } catch (err) {
-    console.error(err);
+    console.error("Fetch submission history error:", err);
     res.status(500).json({ error: "Failed to fetch history" });
   }
 });
@@ -90,7 +91,7 @@ router.delete('/history/:id', authenticate, async (req, res) => {
     if (!result) return res.status(404).json({ msg: "Submission not found" });
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("Delete submission error:", err);
     res.status(500).json({ msg: "Server error" });
   }
 });
@@ -119,11 +120,9 @@ Only output the JSON object, no extra text.
 `;
 
   try {
-    // Use Docker service name "ollama" instead of localhost
-    const ollamaRes = await axios.post('http://ollama:11434/api/generate', {
+    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
       model: "llama3",
-      prompt: ollamaPrompt,
-      stream: false
+      prompt: ollamaPrompt
     });
 
     let aiJSON = null;
@@ -160,7 +159,7 @@ router.post('/save-ai-question', authenticate, async (req, res) => {
 
     res.json({ success: true, question: saved });
   } catch (err) {
-    console.error(err);
+    console.error("Save AI question error:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

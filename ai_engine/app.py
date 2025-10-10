@@ -15,9 +15,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 # Optional: Ollama for question generation
 try:
     import ollama
-    OLLAMA_HOST = os.environ.get("OLLAMA_URL", "http://ollama:11434")
+    OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
     if not getattr(ollama, "BASE_URL", None):
-        ollama.BASE_URL = OLLAMA_HOST
+        ollama.BASE_URL = OLLAMA_URL
     OLLAMA_AVAILABLE = True
     print("Using Ollama base URL:", ollama.BASE_URL)
 except Exception:
@@ -181,23 +181,26 @@ def voice_personalized_suggestions(emotion: str, tempo: float, energy: float, pi
     sugs = []
     if emotion in VOICE_BASE_SUGGESTIONS:
         sugs.append(VOICE_BASE_SUGGESTIONS[emotion])
-    if tempo < 80:
-        sugs.append("Pace is slow. Increase your words per minute slightly to maintain energy.")
-    elif tempo > 160:
-        sugs.append("Pace is fast. Slow down to improve clarity and allow ideas to land.")
-    if energy < 0.02:
-        sugs.append("Overall energy is low. Project more and speak from the diaphragm.")
-    elif energy > 0.12:
-        sugs.append("Energy is high. Balance intensity with clear articulation.")
-    if pitch < 100:
-        sugs.append("Pitch is low. Raise pitch slightly on positive points to sound more upbeat.")
-    elif pitch > 220:
-        sugs.append("Pitch is high. Relax the throat and lower pitch slightly for steadiness.")
+    if tempo is not None:
+        if tempo < 80:
+            sugs.append("Pace is slow. Increase words per minute slightly to maintain energy.")
+        elif tempo > 160:
+            sugs.append("Pace is fast. Slow down to improve clarity.")
+    if energy is not None:
+        if energy < 0.02:
+            sugs.append("Overall energy is low. Project more.")
+        elif energy > 0.12:
+            sugs.append("Energy is high. Balance intensity with clear articulation.")
+    if pitch is not None:
+        if pitch < 100:
+            sugs.append("Pitch is low. Raise pitch slightly on positive points.")
+        elif pitch > 220:
+            sugs.append("Pitch is high. Relax the throat slightly for steadiness.")
     if filler_words:
         common = ", ".join(sorted(set(filler_words)))
-        sugs.append(f"Reduce filler words such as {common}. Use a short pause instead of a filler.")
-    sugs.append("Use intentional pauses after key points. It signals confidence and helps listeners process information.")
-    sugs.append("Emphasize action words and accomplishments to convey impact and ownership.")
+        sugs.append(f"Reduce filler words such as {common}. Use a short pause instead.")
+    sugs.append("Use intentional pauses after key points.")
+    sugs.append("Emphasize action words and accomplishments.")
     return sugs
 
 @app.route("/analyze/audio", methods=["POST"])
@@ -218,54 +221,43 @@ def analyze_audio_endpoint():
         if y.ndim > 1:
             y = librosa.to_mono(y)
 
+        # Safe extraction
         try:
             energy_val = librosa.feature.rms(y=y)
             energy = float(np.mean(energy_val))
-        except Exception as e:
-            print("Energy extraction error:", e)
-            energy = None
+            if math.isnan(energy):
+                energy = 0.0
+        except:
+            energy = 0.0
 
         try:
             tempo_val, _ = librosa.beat.beat_track(y=y, sr=sr)
             tempo = float(tempo_val)
-        except Exception as e:
-            print("Tempo extraction error:", e)
-            tempo = None
+            if math.isnan(tempo):
+                tempo = 0.0
+        except:
+            tempo = 0.0
 
         try:
             pitch_arr = librosa.yin(y, fmin=50, fmax=300, sr=sr)
             pitch = float(np.nanmean(pitch_arr))
             if math.isnan(pitch):
-                pitch = None
-        except Exception as e:
-            print("Pitch extraction error:", e)
-            pitch = None
+                pitch = 0.0
+        except:
+            pitch = 0.0
 
-        if energy is not None and tempo is not None and energy < 0.02 and tempo < 80:
+        # Simple emotion mapping
+        if energy < 0.02 and tempo < 80:
             emotion = "calm"
-        elif pitch is not None and pitch > 200 and energy is not None and energy > 0.10:
+        elif pitch > 200 and energy > 0.10:
             emotion = "excited"
-        elif tempo is not None and tempo < 60 and pitch is not None and pitch < 100:
+        elif tempo < 60 and pitch < 100:
             emotion = "tired"
         else:
             emotion = "neutral"
 
-        metrics = {
-            "emotion": emotion,
-            "tempo_bpm": round(tempo,2) if tempo else "N/A",
-            "energy_rms": round(energy,5) if energy else "N/A",
-            "pitch_hz": round(pitch,2) if pitch else "N/A",
-            "filler_words": filler_words
-        }
-        print("Voice analysis metrics:", metrics)
+        suggestions = voice_personalized_suggestions(emotion, tempo, energy, pitch, filler_words)
 
-        suggestions = voice_personalized_suggestions(
-            emotion,
-            tempo if tempo else 0,
-            energy if energy else 0,
-            pitch if pitch else 0,
-            filler_words
-        )
         return jsonify({
             "emotion": emotion,
             "tempo": tempo,
@@ -273,6 +265,7 @@ def analyze_audio_endpoint():
             "pitch": pitch,
             "suggestions": suggestions
         })
+
     except Exception as e:
         print("Audio analysis error:", e)
         return jsonify({"error": "Failed to process audio"}), 500
@@ -286,7 +279,6 @@ def generate_behavioral_questions():
     prompt = "Generate 5 unique STAR-format behavioral interview questions for technology job interviews. Return ONLY a numbered list."
     try:
         if not OLLAMA_AVAILABLE:
-            print("Ollama not available, returning fallback questions.")
             return jsonify({"questions": [
                 "Tell me about a time you overcame a challenge.",
                 "Describe a situation where you worked under pressure.",
@@ -294,7 +286,6 @@ def generate_behavioral_questions():
                 "How do you resolve conflict within a team?",
                 "Tell me about a time you received constructive criticism."
             ]})
-        print("Calling Ollama for questions...")
         response = ollama.generate(model="llama3", prompt=prompt)
         raw_output = response.get("response","")
         questions = [line.strip(" -0123456789.") for line in raw_output.split("\n") if line.strip()]

@@ -1,8 +1,10 @@
 const express = require('express');
 const auth = require('../middleware/authMiddleware');
 const FeedbackResult = require('../models/FeedbackResult');
+const axios = require('axios');
 
 const router = express.Router();
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 
 /**
  * POST /api/feedback/save
@@ -35,7 +37,7 @@ router.post('/save', auth, async (req, res) => {
 
     res.json({ msg: 'Feedback saved', suggestions, id: saved._id });
   } catch (err) {
-    console.error('Save feedback error:', err.message);
+    console.error('Save feedback error:', err.message || err);
     res.status(500).json({ msg: 'Server error while saving feedback' });
   }
 });
@@ -53,8 +55,36 @@ router.get('/history', auth, async (req, res) => {
 
     res.json(items);
   } catch (err) {
-    console.error('Get feedback history error:', err.message);
+    console.error('Get feedback history error:', err.message || err);
     res.status(500).json({ msg: 'Failed to load feedback history' });
+  }
+});
+
+/**
+ * Optional: Generate AI-based personalized feedback (future)
+ * POST /api/feedback/ai
+ * Body: { answer, question, topic }
+ */
+router.post('/ai', auth, async (req, res) => {
+  try {
+    const { answer, question, topic } = req.body;
+    const prompt = `
+      You are an expert interviewer for ${topic}.
+      Question: "${question}"
+      Candidate answer: "${answer}"
+      Provide a brief review, improvement suggestions, and a 1-5 score in 3 lines.
+    `;
+
+    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
+      model: 'llama3',
+      prompt
+    });
+
+    const feedback = ollamaRes.data?.response || 'AI feedback not available.';
+    res.json({ feedback: feedback.trim() });
+  } catch (err) {
+    console.error('AI feedback generation error:', err.message || err);
+    res.status(500).json({ msg: 'Failed to generate AI feedback' });
   }
 });
 

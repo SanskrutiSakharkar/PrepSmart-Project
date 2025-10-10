@@ -2,9 +2,16 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
+
+/**
+ * POST /api/feedback
+ * Body: { question, answer, topic }
+ */
 router.post('/feedback', async (req, res) => {
   try {
     const { question, answer, topic } = req.body;
+
     const prompt = `
       You are an expert interviewer for ${topic}.
       Here is the technical question: "${question}"
@@ -15,26 +22,18 @@ router.post('/feedback', async (req, res) => {
       - A 1-5 score for the answer (just the number).
       Respond in 3-4 lines.
     `;
-    const ollamaRes = await axios.post(
-      'http://ollama:11434/api/generate',
-      { model: "llama3", prompt },
-      { responseType: 'stream' }
-    );
-    let feedback = '';
-    ollamaRes.data.on('data', (chunk) => {
-      chunk.toString().split('\n').forEach(line => {
-        if (line.trim() === '') return;
-        try {
-          const obj = JSON.parse(line);
-          if (obj.response) feedback += obj.response;
-        } catch (e) {}
-      });
+
+    // Use JSON response instead of streaming
+    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
+      model: "llama3",
+      prompt
     });
-    ollamaRes.data.on('end', () => {
-      res.json({ feedback: feedback.trim() });
-    });
+
+    const feedback = ollamaRes.data?.response || "AI feedback not available.";
+    res.json({ feedback: feedback.trim() });
+
   } catch (err) {
-    console.error("Ollama feedback error:", err.message);
+    console.error("Ollama feedback error:", err.message || err);
     res.status(500).json({ error: 'Failed to get feedback.' });
   }
 });
