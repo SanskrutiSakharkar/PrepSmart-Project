@@ -11,7 +11,6 @@ from werkzeug.utils import secure_filename
 import librosa
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer, util
 
 # Optional: Ollama for question generation
 try:
@@ -32,12 +31,9 @@ CORS(app, origins=["http://54.163.25.182", "http://localhost:3000", "http://loca
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Load BERT once
-bert_model = SentenceTransformer("all-MiniLM-L6-v2")
-
-# -------------------------------------------------------------------
-# Utility Functions (unchanged)
-# -------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Utility Functions (NO BERT/semantic models)
+# -----------------------------------------------------------------------------
 TOKEN_RX = re.compile(r"\b[a-zA-Z0-9\-\+\.#]+\b")
 def tokenize_words(text: str) -> List[str]:
     return TOKEN_RX.findall(text.lower())
@@ -115,32 +111,11 @@ def improve_bullet(b: Dict[str, Any]) -> str:
     if "vague noun" in b["issues"]:
         improved = improved.replace("things", "customer requests").replace("stuff", "support tickets")
     return improved
-def semantic_coverage(resume_text: str, jd_text: str,
-                      tfidf_thresh: float = 0.45,
-                      bert_thresh: float = 0.72) -> List[Dict[str, Any]]:
-    jd_lines = [ln for ln in nonempty_lines(jd_text) if not is_jd_header(ln)]
-    res_lines = nonempty_lines(resume_text)
-    if not jd_lines or not res_lines:
-        return []
-    vec = TfidfVectorizer().fit(jd_lines + res_lines)
-    res_emb = bert_model.encode(res_lines, convert_to_tensor=True)
-    jd_emb = bert_model.encode(jd_lines, convert_to_tensor=True)
-    uncovered = []
-    for i, jd_line in enumerate(jd_lines):
-        tfidf_sim = cosine_similarity(vec.transform([jd_line]), vec.transform(res_lines))[0]
-        tfidf_best_idx = int(np.argmax(tfidf_sim))
-        tfidf_best = float(tfidf_sim[tfidf_best_idx])
-        cs = util.cos_sim(jd_emb[i], res_emb)[0]
-        bert_best_idx = int(np.argmax(cs))
-        bert_best = float(cs[bert_best_idx])
-        if tfidf_best < tfidf_thresh and bert_best < bert_thresh:
-            uncovered.append({
-                "jd_bullet": jd_line,
-                "best_resume_line": res_lines[tfidf_best_idx],
-                "tfidf_similarity": round(tfidf_best, 2),
-                "bert_similarity": round(bert_best, 2)
-            })
-    return uncovered
+
+def semantic_coverage(resume_text: str, jd_text: str, tfidf_thresh: float = 0.45) -> list:
+    # No BERT/semantic model installed in minimal version.
+    return []
+
 def leadership_score(resume_text: str) -> Dict[str, Any]:
     lines = nonempty_lines(resume_text)
     leader = sum(1 for ln in lines if any(ln.lower().startswith(v) for v in LEADERSHIP_VERBS))
@@ -193,8 +168,7 @@ def analyze_resume_endpoint():
         X = vec.fit_transform([resume, jd])
         tfidf_score = float(cosine_similarity(X[0:1], X[1:2])[0][0]) * 100.0
         diag = keyword_diagnostics(resume, jd)
-        uncovered = semantic_coverage(resume, jd)
-        diag["uncovered_jd_bullets"] = uncovered
+        diag["uncovered_jd_bullets"] = []  # No semantic coverage in minimal mode
         diag["leadership"] = leadership_score(resume)
         diag.update(tech_presence(resume))
         diag.update(relevance_at_top(resume, jd))
