@@ -13,3 +13,5 @@ torch==2.2.0
 transformers==4.42.2
 werkzeug==2.3.7
 
+# Compatibility fix: required for sentence-transformers 2.2.2
+huggingface_hub==0.15.1
