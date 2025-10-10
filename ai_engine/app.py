@@ -25,6 +25,7 @@ except Exception:
 # Flask app and CORS: ALLOW EC2 PUBLIC IP FRONTEND
 # -----------------------------------------------------------------------------
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024  # 20 MB limit
 CORS(app, origins=["http://54.163.25.182", "http://localhost:3000", "http://localhost"], supports_credentials=True)
 # For production, replace with only your frontend's real domain.
 

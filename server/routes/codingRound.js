@@ -1,3 +1,20 @@
+const express = require('express');
+const CodingQuestion = require('../models/CodingQuestion');
+const CodingSubmission = require('../models/CodingSubmission');
+const authenticate = require('../middleware/authMiddleware');
+const { runJudge0 } = require('../utils/judge0');
+const axios = require('axios');
+
+const router = express.Router();
+
+// Get all questions for section
+router.get('/questions', authenticate, async (req, res) => {
+  const { section } = req.query;
+  const questions = await CodingQuestion.find({ section });
+  res.json(questions);
+});
+
+// Submit code for grading (with Judge0)
 router.post('/submit', authenticate, async (req, res) => {
   const { questionId, code, language } = req.body;
   const userId = req.user.id;
@@ -12,67 +29,21 @@ router.post('/submit', authenticate, async (req, res) => {
       stdin: testCase.input || "",
       expected_output: testCase.expectedOutput || ""
     });
-
     output = judgeRes.stdout || judgeRes.compile_output || judgeRes.stderr || '';
     statusDesc = judgeRes.status ? judgeRes.status.description : "";
     passed = judgeRes.status && judgeRes.status.description === "Accepted";
 
-    // -------------------------------
-    // Output normalization & custom compare
-    // -------------------------------
-    let expected = (testCase.expectedOutput || "").trim();
-    let actual = (output || '').trim();
-
-    // For Python-style booleans, allow flexible match
-    if (
-      typeof expected === "string" &&
-      (expected === "True" || expected === "False" ||
-       expected === "true" || expected === "false")
-    ) {
-      if (
-        actual.toLowerCase() === expected.toLowerCase() || // 'true' vs 'True'
-        actual.replace(/[\r\n]+/g, '') === expected.replace(/[\r\n]+/g, '') // Remove line breaks
-      ) {
-        passed = true;
-        statusDesc = "Accepted";
-      }
-    }
-    // Also check case-insensitive match for string outputs
-    else if (
-      typeof expected === "string" &&
-      typeof actual === "string" &&
-      expected.toLowerCase() === actual.toLowerCase()
-    ) {
-      passed = true;
-      statusDesc = "Accepted";
-    }
-
-    // -------------------------------
-    // Suggestions
-    // -------------------------------
     if (!passed) {
       suggestions.push("Check your logic and output format.");
       if (judgeRes.stderr) suggestions.push("Your code has errors: " + judgeRes.stderr);
       if (judgeRes.compile_output) suggestions.push("Compiler says: " + judgeRes.compile_output);
       if (statusDesc) suggestions.push("Status: " + statusDesc);
-
-      // Output format hints
-      if (expected && actual && expected.toLowerCase() === actual.toLowerCase() && expected !== actual) {
-        suggestions.push("Your answer is almost correct! Check output capitalization or whitespace.");
-      }
-      if (expected && actual && expected.replace(/[\r\n]+/g, '') === actual.replace(/[\r\n]+/g, '') && expected !== actual) {
-        suggestions.push("Remove any extra newlines or spaces at the end of your output.");
-      }
       if (language === 'python' && !code.includes('def')) suggestions.push('Use Python functions for clean code.');
       if (language === 'react' && !code.includes('useState')) suggestions.push('Try React hooks for state.');
       if (language === 'mysql' && !code.toLowerCase().includes('select')) suggestions.push('Use SELECT to retrieve data.');
     } else {
       suggestions.push("Great job! Your code passed.");
     }
-
-    // Debug log for dev
-    console.log(`[Grading] QID: ${questionId} | Expected: "${expected}" | Actual: "${actual}" | Status: ${statusDesc}`);
-
   } catch (err) {
     output = "Code judge error: " + err.message;
     suggestions.push("Server error, please try again.");
@@ -90,3 +61,91 @@ router.post('/submit', authenticate, async (req, res) => {
 
   res.json({ output, passed, suggestions, status: statusDesc });
 });
+
+// Get history for current user
+router.get('/history', authenticate, async (req, res) => {
+  const userId = req.user.id;
+  const submissions = await CodingSubmission.find({ userId }).populate('questionId');
+  res.json(submissions);
+});
+
+// === NEW: Delete a coding submission by ID ===
+router.delete('/history/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const result = await CodingSubmission.findOneAndDelete({ _id: id, userId });
+    if (!result) return res.status(404).json({ msg: "Submission not found" });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+// === NEW: AI Question Generation Route with Ollama ===
+router.post('/ai-question', authenticate, async (req, res) => {
+  const { section, difficulty } = req.body;
+  const sectionMap = {
+    python: "Python",
+    react: "JavaScript (ReactJS)",
+    mysql: "SQL"
+  };
+  const language = sectionMap[section] || "Python";
+
+  const ollamaPrompt = `
+Generate a ${difficulty} ${language} coding interview problem as a JSON object with these keys:
+{
+  "title": "...",
+  "description": "...",
+  "starterCode": "...",
+  "testCases": [{"input": "...", "expectedOutput": "..."}, ...],
+  "difficulty": "${difficulty}",
+  "section": "${section}"
+}
+Be concise. Only output the JSON object, no extra text.
+`;
+
+  try {
+    const ollamaRes = await axios.post('http://localhost:11434/api/generate', {
+      model: "llama3",
+      prompt: ollamaPrompt,
+      stream: false
+    });
+
+    let aiJSON = null;
+    try {
+      const match = ollamaRes.data.response.match(/\{[\s\S]*\}/);
+      aiJSON = JSON.parse(match[0]);
+    } catch (e) {
+      return res.status(500).json({ error: "Failed to parse Ollama response." });
+    }
+    res.json({ question: aiJSON });
+  } catch (err) {
+    console.error("Ollama question generation error:", err);
+    res.status(500).json({ error: "Failed to generate question." });
+  }
+});
+
+// === NEW: Save AI-Generated Question ===
+router.post('/save-ai-question', authenticate, async (req, res) => {
+  try {
+    const q = req.body.question;
+    if (!q.title || !q.description || !q.section) {
+      return res.status(400).json({ success: false, error: "Invalid question data" });
+    }
+    // Save to MongoDB
+    const saved = await CodingQuestion.create({
+      section: q.section,
+      title: q.title,
+      description: q.description,
+      starterCode: q.starterCode,
+      testCases: q.testCases,
+      difficulty: q.difficulty
+    });
+    res.json({ success: true, question: saved });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+module.exports = router;
