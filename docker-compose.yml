@@ -43,12 +43,17 @@ services:
   ollama:
     image: ollama/ollama
     container_name: ollama
-    # Remove this line if you want Ollama to be accessible **only** inside Docker:
     ports:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+      start_period: 10s
 
   mongo:
     image: mongo:6.0
