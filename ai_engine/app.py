@@ -18,7 +18,7 @@ try:
     import ollama
     OLLAMA_AVAILABLE = True
     if not getattr(ollama, "BASE_URL", None):
-        ollama.BASE_URL = "http://host.docker.internal:11434"
+        ollama.BASE_URL = "http://172.31.18.109:11434"
 except Exception:
     OLLAMA_AVAILABLE = False
 
