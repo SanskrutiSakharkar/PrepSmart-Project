@@ -8,26 +8,41 @@ services:
     depends_on:
       - backend
     restart: always
+    environment:
+      - REACT_APP_API_URL=/api  # If your frontend uses this
 
   backend:
     build: ./server
     env_file:
-      - ./server/.env       # Reads MONGODB_URI and other backend variables
+      - ./server/.env
     ports:
       - "5000:5000"
     depends_on:
       - ai_engine
+      - mongo
     environment:
       - AI_ENGINE_URL=http://ai_engine:8000
-      # Additional overrides can go here
+      - MONGODB_URI=mongodb://mongo:27017/prepsmart
     restart: always
 
   ai_engine:
     build: ./ai_engine
     env_file:
-      - ./ai_engine/.env    # AI engine environment variables
+      - ./ai_engine/.env
     ports:
       - "8000:8000"
     environment:
       - FLASK_ENV=production
     restart: always
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
