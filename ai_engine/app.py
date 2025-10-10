@@ -18,7 +18,7 @@ try:
     import ollama
     OLLAMA_AVAILABLE = True
     if not getattr(ollama, "BASE_URL", None):
-        ollama.BASE_URL = "http://172.31.18.109:11434"
+        ollama.BASE_URL = "http://localhost:11434/api/generate"
 except Exception:
     OLLAMA_AVAILABLE = False
 
