@@ -5,7 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 import "./Login.css";
 
 // Load backend URL from environment variable
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || "http://98.88.37.110:5000";
 
 export default function Login() {
   const { setToken } = useContext(AuthContext);
