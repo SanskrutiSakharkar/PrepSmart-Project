@@ -18,10 +18,12 @@ const app = express();
 connectDB();
 
 // CORS middleware (adjust origin if needed)
+// server.js
 app.use(cors({
-  origin: 'http://localhost:3000', // Frontend URL
-  credentials: false // Set true only if using cookies/sessions
+  origin: ['http://localhost:3000', 'http://98.88.37.110:3000'],
+  credentials: false
 }));
+
 
 // JSON parser (limit to prevent huge payloads)
 app.use(express.json({ limit: '10mb' }));
