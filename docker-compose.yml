@@ -1,6 +1,31 @@
-version: '3.9'
-
 services:
+  backend:
+    build: ./server
+    env_file: ./server/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - ai_engine
+      - mongo
+      - ollama
+    environment:
+      - AI_ENGINE_URL=http://ai_engine:8000
+      - OLLAMA_URL=http://ollama:11434
+      - MONGODB_URI=mongodb://mongo:27017/prepsmart
+    restart: always
+
+  ai_engine:
+    build: ./ai_engine
+    env_file: ./ai_engine/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ollama
+    environment:
+      - FLASK_ENV=production
+      - OLLAMA_URL=http://ollama:11434
+    restart: always
+
   frontend:
     build: ./client
     ports:
@@ -9,33 +34,18 @@ services:
       - backend
     restart: always
     environment:
-      - REACT_APP_API_URL=http://backend:5000/api
+      - REACT_APP_API_URL=/api
 
-  backend:
-    build: ./server
-    env_file:
-      - ./server/.env
+  ollama:
+    image: ollama/ollama
     ports:
-      - "5000:5000"
-    depends_on:
-      - mongo
-      - ai_engine
-    environment:
-      - AI_ENGINE_URL=http://ai_engine:8000
-      - MONGODB_URI=mongodb://mongo:27017/prepsmart
-    restart: always
-
-  ai_engine:
-    build: ./ai_engine
-    env_file:
-      - ./ai_engine/.env
-    ports:
-      - "8000:8000"
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
     restart: always
 
   mongo:
     image: mongo:6.0
-    container_name: mongo
     ports:
       - "27017:27017"
     restart: always
@@ -44,3 +54,4 @@ services:
 
 volumes:
   mongo_data:
+  ollama_data:

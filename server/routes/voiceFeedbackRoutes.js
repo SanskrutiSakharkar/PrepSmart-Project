@@ -6,7 +6,7 @@ const FormData = require("form-data");
 const authenticate = require("../middleware/authMiddleware");
 const VoiceFeedback = require("../models/VoiceFeedback");
 
-// Multer memory storage for audio files
+// --- Multer memory storage for audio uploads ---
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
@@ -24,8 +24,8 @@ router.post("/save", authenticate, async (req, res) => {
       audioFileName,
     });
     res.json({ success: true, feedback });
-  } catch (e) {
-    console.error("Failed to save:", e);
+  } catch (err) {
+    console.error("Failed to save:", err);
     res.status(500).json({ success: false, error: "DB save failed" });
   }
 });
@@ -37,8 +37,8 @@ router.get("/history", authenticate, async (req, res) => {
       .sort({ timestamp: -1 })
       .limit(20);
     res.json(history);
-  } catch (e) {
-    console.error("Failed to fetch history:", e);
+  } catch (err) {
+    console.error("Failed to fetch history:", err);
     res.status(500).json({ error: "Failed to fetch history" });
   }
 });
@@ -52,8 +52,8 @@ router.delete("/:id", authenticate, async (req, res) => {
     });
     if (!deleted) return res.status(404).json({ success: false, error: "Not found" });
     res.json({ success: true });
-  } catch (e) {
-    console.error("Delete failed:", e);
+  } catch (err) {
+    console.error("Delete failed:", err);
     res.status(500).json({ success: false, error: "Delete failed" });
   }
 });
@@ -67,19 +67,19 @@ router.post("/analyze", authenticate, upload.single("audio"), async (req, res) =
     const formData = new FormData();
     formData.append("audio", req.file.buffer, req.file.originalname);
 
-    // Use AI_ENGINE_URL from env
+    // Use AI_ENGINE_URL from environment (must match Docker service)
     const aiUrl = process.env.AI_ENGINE_URL || "http://ai_engine:8000";
 
     const response = await axios.post(`${aiUrl}/analyze/audio`, formData, {
       headers: {
         ...formData.getHeaders(),
       },
-      timeout: 60000, // 60s timeout
+      timeout: 120000, // 2 min timeout
     });
 
     const result = response.data;
 
-    // Save to MongoDB automatically
+    // Save result automatically to MongoDB
     const feedback = await VoiceFeedback.create({
       userId: req.user.id,
       emotion: result.emotion,
@@ -97,7 +97,7 @@ router.post("/analyze", authenticate, upload.single("audio"), async (req, res) =
   }
 });
 
-// --- POST fallback for /api/voice-feedback (legacy) ---
+// --- Legacy POST fallback for /api/voice-feedback ---
 router.post("/", authenticate, async (req, res) => {
   const { emotion, pitch, energy, tempo, suggestions, audioFileName } = req.body;
   try {
@@ -111,8 +111,8 @@ router.post("/", authenticate, async (req, res) => {
       audioFileName,
     });
     res.json({ success: true, feedback });
-  } catch (e) {
-    console.error("Route / failed to save:", e);
+  } catch (err) {
+    console.error("Route / failed to save:", err);
     res.status(500).json({ success: false, error: "Route / failed to save" });
   }
 });
