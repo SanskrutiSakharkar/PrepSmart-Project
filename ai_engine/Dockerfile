@@ -2,17 +2,16 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install only required system libs
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install system dependencies for audio and scientific libs
+RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsndfile1 \
  && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
-# Upgrade pip and install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt && \
-    rm -rf /root/.cache/pip /tmp/*
+# Install dependencies without cache to save space
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
