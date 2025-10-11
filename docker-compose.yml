@@ -1,76 +1,46 @@
-version: '3.9'
+version: "3.9"
 
 services:
   mongo:
     image: mongo:6.0
-    container_name: mongo
+    container_name: prepsmart-project-mongo
+    restart: unless-stopped
+    volumes:
+      - prepsmart-project_mongo_data:/data/db
     ports:
       - "27017:27017"
-    restart: always
-    volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test: ["CMD-SHELL", "mongo --eval 'db.adminCommand(\"ping\")' || exit 1"]
-      interval: 10s
-      retries: 5
-      timeout: 5s
-      start_period: 10s
 
   ai_engine:
     build:
       context: ./ai_engine
       dockerfile: Dockerfile
-    container_name: ai_engine
-    env_file: ./ai_engine/.env
+    container_name: prepsmart-project-ai_engine
+    restart: unless-stopped
+    depends_on:
+      - mongo
     ports:
       - "8000:8000"
-    environment:
-      - FLASK_ENV=production
-      - MONGODB_URI=mongodb://mongo:27017/prepsmart
-    depends_on:
-      mongo:
-        condition: service_healthy
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
-      interval: 10s
-      retries: 5
-      timeout: 5s
-      start_period: 10s
+    volumes:
+      - ./ai_engine/uploads:/app/uploads
 
   backend:
-    build: ./server
-    container_name: backend
-    env_file: ./server/.env
+    build:
+      context: ./backend
+    container_name: prepsmart-project-backend
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - ai_engine
     ports:
       - "5000:5000"
-    environment:
-      - AI_ENGINE_URL=http://ai_engine:8000
-      - MONGODB_URI=mongodb://mongo:27017/prepsmart
-    depends_on:
-      mongo:
-        condition: service_healthy
-      ai_engine:
-        condition: service_healthy
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
-      interval: 10s
-      retries: 5
-      timeout: 5s
-      start_period: 10s
 
   frontend:
-    build: ./client
-    container_name: frontend
+    build:
+      context: ./frontend
+    container_name: prepsmart-project-frontend
+    restart: unless-stopped
     ports:
-      - "80:80"
-    depends_on:
-      backend:
-        condition: service_healthy
-    restart: always
-    environment:
-      - REACT_APP_API_URL=/api
+      - "3000:3000"
 
 volumes:
-  mongo_data:
+  prepsmart-project_mongo_data:
