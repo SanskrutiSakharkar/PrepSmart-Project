@@ -19,7 +19,6 @@ services:
   ai_engine:
     build: ./ai_engine
     container_name: ai_engine
-    env_file: ./ai_engine/.env
     ports:
       - "8000:8000"
     environment:
