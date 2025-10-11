@@ -16,18 +16,13 @@ export default function Landing() {
           <button onClick={() => navigate('/login')}>Login</button>
         </nav>
       </header>
+
       <main>
         <section className="landing-hero">
           <div className="landing-hero-card">
             <h1>AI-Powered Interview Prep</h1>
-            <p>
-              Boost your confidence.<br/>
-              Practice, analyze, and get feedback on coding, behavioral, and technical interviews, all in one place.
-            </p>
-            <button
-              className="hero-btn"
-              onClick={() => navigate('/register')}
-            >
+            <p>Boost your confidence. Practice, analyze, and get feedback.</p>
+            <button className="hero-btn" onClick={() => navigate('/register')}>
               Get Started Free <FaArrowRight style={{ marginLeft: 10, verticalAlign: "middle" }} />
             </button>
           </div>
@@ -36,29 +31,14 @@ export default function Landing() {
         <section className="landing-features" id="features">
           <h2>Features</h2>
           <div className="features-grid">
-            <div className="feature-card">
-              <FaComments className="feature-icon" />
-              <h3>Behavioral Answers</h3>
-              <p>Type or record STAR responses. Get instant, actionable AI feedback on your answers.</p>
-            </div>
-            <div className="feature-card">
-              <FaMicrophone className="feature-icon" />
-              <h3>Voice Analysis</h3>
-              <p>Upload voice clips. Get real-time analysis of your tone, energy, and confidence.</p>
-            </div>
-            <div className="feature-card">
-              <FaCode className="feature-icon" />
-              <h3>Technical & Coding Rounds</h3>
-              <p>Practice real coding and technical questions with automatic evaluation and tips.</p>
-            </div>
-            <div className="feature-card">
-              <FaRobot className="feature-icon" />
-              <h3>AI-Powered Suggestions</h3>
-              <p>Get personalized improvement suggestions for every aspect of your prep journey.</p>
-            </div>
+            <div className="feature-card"><FaComments className="feature-icon" /><h3>Behavioral Answers</h3><p>Type or record STAR responses. Get actionable AI feedback.</p></div>
+            <div className="feature-card"><FaMicrophone className="feature-icon" /><h3>Voice Analysis</h3><p>Upload voice clips. Analyze tone, energy, and confidence.</p></div>
+            <div className="feature-card"><FaCode className="feature-icon" /><h3>Technical & Coding Rounds</h3><p>Practice coding and technical questions with automatic evaluation.</p></div>
+            <div className="feature-card"><FaRobot className="feature-icon" /><h3>AI Suggestions</h3><p>Get personalized improvement suggestions for your prep journey.</p></div>
           </div>
         </section>
       </main>
+
       <footer className="landing-footer">
         &copy; {new Date().getFullYear()} PrepSmart. All rights reserved.
       </footer>

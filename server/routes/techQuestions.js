@@ -1,11 +1,8 @@
 const express = require('express');
 const TechQuestion = require('../models/TechQuestion');
-const axios = require('axios');
 const router = express.Router();
 
-const OLLAMA_URL = process.env.OLLAMA_URL || 'http://ollama:11434';
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama2';
-// --- Get all questions for a topic ---
+// GET / (fetch all questions)
 router.get('/', async (req, res) => {
   try {
     const { topic } = req.query;
@@ -18,37 +15,17 @@ router.get('/', async (req, res) => {
   }
 });
 
-// --- Generate AI question ---
+// POST /generate (static template question)
 router.post('/generate', async (req, res) => {
-  try {
-    const { topic } = req.body;
-    const prompt = `Generate a technical interview question for software engineering freshers, focused on ${topic}. Do not provide an answer, only the question.`;
-
-    let result = "Failed to get AI question.";
-    try {
-      const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-        model: OLLAMA_MODEL,
-        prompt
-      });
-
-      result = ollamaRes.data?.response || result;
-    } catch (err) {
-      console.error("Ollama call failed:", err.message);
-      if (err.response) console.error("Ollama response data:", err.response.data);
-    }
-
-    res.json({ question: result.trim() });
-
-  } catch (err) {
-    console.error("Ollama question generation error:", err.message || err);
-    res.status(500).json({ error: 'Failed to generate question.' });
-  }
+  const { topic } = req.body;
+  const question = `Sample technical interview question on ${topic}.`;
+  res.json({ question });
 });
 
-// --- Save a new question ---
+// POST /save
 router.post('/save', async (req, res) => {
+  const { question, topic, difficulty = "ai" } = req.body;
   try {
-    const { question, topic, difficulty = "ai" } = req.body;
     const saved = await TechQuestion.create({ question, topic, difficulty });
     res.json(saved);
   } catch (err) {

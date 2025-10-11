@@ -5,24 +5,13 @@ import numpy as np
 from typing import List, Dict, Any
 
 from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
 import librosa
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
-# Optional: Ollama for question generation
-try:
-    import ollama
-    OLLAMA_HOST = os.environ.get("OLLAMA_URL", "http://ollama:11434")
-    if not getattr(ollama, "BASE_URL", None):
-        ollama.BASE_URL = OLLAMA_HOST
-    OLLAMA_AVAILABLE = True
-    print("Using Ollama base URL:", ollama.BASE_URL)
-except Exception:
-    OLLAMA_AVAILABLE = False
-    print("Ollama not available, fallback mode enabled.")
+from sentence_transformers import SentenceTransformer, util
 
 # ---------------------------------------------------------------------
 # Flask app and CORS
@@ -33,6 +22,12 @@ CORS(app, origins=["http://localhost:3000", "http://localhost"], supports_creden
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# ---------------------------------------------------------------------
+# NLP Model for embeddings
+# ---------------------------------------------------------------------
+# MiniLM for lightweight but effective embeddings
+nlp_model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # ---------------------------------------------------------------------
 # Utility functions
@@ -156,12 +151,14 @@ def analyze_resume_endpoint():
         vec = TfidfVectorizer()
         X = vec.fit_transform([resume, jd])
         tfidf_score = float(cosine_similarity(X[0:1], X[1:2])[0][0])*100.0
+
         diag = keyword_diagnostics(resume, jd)
         diag["uncovered_jd_bullets"] = []
         diag["leadership"] = leadership_score(resume)
         diag.update(tech_presence(resume))
         diag.update(relevance_at_top(resume, jd))
         suggestions = resume_personalized_suggestions(resume, jd, diag)
+
         return jsonify({"match_score": round(tfidf_score,2), "diagnostics": diag, "suggestions": suggestions})
     except Exception as e:
         print("Resume analysis error:", e)
@@ -278,30 +275,19 @@ def analyze_audio_endpoint():
         return jsonify({"error": "Failed to process audio"}), 500
 
 # ---------------------------------------------------------------------
-# Behavioral questions endpoint
+# Behavioral questions endpoint (static + NLP ready)
 # ---------------------------------------------------------------------
-@app.route("/ollama/behavioral-questions", methods=["GET"])
-@cross_origin()
-def generate_behavioral_questions():
-    prompt = "Generate 5 unique STAR-format behavioral interview questions for technology job interviews. Return ONLY a numbered list."
-    try:
-        if not OLLAMA_AVAILABLE:
-            print("Ollama not available, returning fallback questions.")
-            return jsonify({"questions": [
-                "Tell me about a time you overcame a challenge.",
-                "Describe a situation where you worked under pressure.",
-                "Give an example of leadership in your experience.",
-                "How do you resolve conflict within a team?",
-                "Tell me about a time you received constructive criticism."
-            ]})
-        print("Calling Ollama for questions...")
-        response = ollama.generate(model="llama2", prompt=prompt)
-        raw_output = response.get("response","")
-        questions = [line.strip(" -0123456789.") for line in raw_output.split("\n") if line.strip()]
-        return jsonify({"questions": questions})
-    except Exception as e:
-        print("Ollama generation error:", e)
-        return jsonify({"error": "Failed to generate questions"}), 500
+DEFAULT_BEHAVIORAL_QUESTIONS = [
+    "Tell me about a time you overcame a challenge.",
+    "Describe a situation where you worked under pressure.",
+    "Give an example of leadership in your experience.",
+    "How do you resolve conflict within a team?",
+    "Tell me about a time you received constructive criticism."
+]
+
+@app.route("/behavioral/questions", methods=["GET"])
+def get_behavioral_questions():
+    return jsonify({"questions": DEFAULT_BEHAVIORAL_QUESTIONS})
 
 # ---------------------------------------------------------------------
 # Health check
@@ -310,5 +296,6 @@ def generate_behavioral_questions():
 def health():
     return jsonify({"ok": True})
 
+# ---------------------------------------------------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)

@@ -6,86 +6,58 @@ const Resume = require('../models/Resume');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
-
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// ==== 1. UPLOAD RESUME & JD ====
-// POST /api/resume/upload
-router.post(
-  '/upload',
-  authMiddleware,
-  upload.fields([{ name: 'resume' }, { name: 'jobDesc' }]),
-  async (req, res) => {
-    try {
-      const resumeFile = req.files.resume?.[0];
-      const jdFile = req.files.jobDesc?.[0];
+// POST /upload
+router.post('/upload', authMiddleware, upload.fields([{ name: 'resume' }, { name: 'jobDesc' }]), async (req, res) => {
+  try {
+    const resumeFile = req.files.resume?.[0];
+    const jdFile = req.files.jobDesc?.[0];
+    if (!resumeFile || !jdFile) return res.status(400).json({ msg: 'Both Resume and Job Description files are required.' });
 
-      if (!resumeFile || !jdFile) {
-        return res.status(400).json({ msg: 'Both Resume and Job Description files are required.' });
-      }
+    const extractText = async (file) => {
+      if (file.mimetype === 'application/pdf') return (await pdfParse(file.buffer)).text;
+      if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        return (await mammoth.extractRawText({ buffer: file.buffer })).value;
+      return 'Unsupported file type';
+    };
 
-      // Extract plain text from PDF or DOCX
-      const extractText = async (file) => {
-        if (file.mimetype === 'application/pdf') {
-          const data = await pdfParse(file.buffer);
-          return data.text;
-        } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-          const result = await mammoth.extractRawText({ buffer: file.buffer });
-          return result.value;
-        } else {
-          return 'Unsupported file type';
-        }
-      };
+    const resumeText = await extractText(resumeFile);
+    const jdText = await extractText(jdFile);
 
-      const resumeText = await extractText(resumeFile);
-      const jdText = await extractText(jdFile);
+    const newUpload = new Resume({
+      userId: req.user.id,
+      resumeText,
+      jobDescText: jdText,
+      uploadedAt: new Date(),
+    });
+    await newUpload.save();
 
-      // Save both to DB
-      const newUpload = new Resume({
-        userId: req.user.id,
-        resumeText,
-        jobDescText: jdText,
-        uploadedAt: new Date(),
-      });
-
-      await newUpload.save();
-
-      res.json({ msg: 'Files uploaded and text extracted successfully.' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ msg: 'Server error while processing upload.' });
-    }
+    res.json({ msg: 'Files uploaded and text extracted successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error while processing upload.' });
   }
-);
+});
 
-// ==== 2. GET LATEST RESUME/JD TEXTS ====
-// GET /api/resume/texts
+// GET /texts
 router.get('/texts', authMiddleware, async (req, res) => {
   try {
     const lastUpload = await Resume.findOne({ userId: req.user.id }).sort({ uploadedAt: -1 });
-    if (!lastUpload) {
-      return res.status(404).json({ msg: 'No resume/job description uploaded yet.' });
-    }
-    res.json({
-      resumeText: lastUpload.resumeText || "",
-      jdText: lastUpload.jobDescText || ""
-    });
+    if (!lastUpload) return res.status(404).json({ msg: 'No resume/job description uploaded yet.' });
+    res.json({ resumeText: lastUpload.resumeText || "", jdText: lastUpload.jobDescText || "" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error while fetching resume/job description text.' });
   }
 });
 
-// ==== 3. AI MATCH ENDPOINT ====
-// GET /api/resume/run-ai-match
+// GET /run-ai-match
 router.get('/run-ai-match', authMiddleware, async (req, res) => {
   try {
     const lastUpload = await Resume.findOne({ userId: req.user.id }).sort({ uploadedAt: -1 });
-
-    if (!lastUpload) {
-      return res.status(404).json({ result: "No resume/job description uploaded yet." });
-    }
+    if (!lastUpload) return res.status(404).json({ result: "No resume/job description uploaded yet." });
 
     const resumeWords = new Set(lastUpload.resumeText.toLowerCase().split(/\W+/));
     const jdWords = new Set(lastUpload.jobDescText.toLowerCase().split(/\W+/));

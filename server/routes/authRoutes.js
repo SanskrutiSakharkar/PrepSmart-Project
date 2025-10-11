@@ -5,7 +5,7 @@ const User = require("../models/User");
 
 const router = express.Router();
 
-// REGISTER ROUTE
+// REGISTER
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   try {
@@ -17,19 +17,19 @@ router.post("/register", async (req, res) => {
     await user.save();
 
     const token = jwt.sign(
-      { id: user._id, email: user.email, name: user.name },  //  Include user info in token
+      { id: user._id, email: user.email, name: user.name },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.json({ token, user });  //  Send token and user back
+    res.json({ token, user });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
   }
 });
 
-//  LOGIN ROUTE
+// LOGIN
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -40,12 +40,12 @@ router.post("/login", async (req, res) => {
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
     const token = jwt.sign(
-      { id: user._id, email: user.email, name: user.name },  // Include user info in token
+      { id: user._id, email: user.email, name: user.name },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.json({ token, user });  // Send token and user back
+    res.json({ token, user });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");

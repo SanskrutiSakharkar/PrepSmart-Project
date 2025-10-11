@@ -3,12 +3,10 @@ const CodingQuestion = require('../models/CodingQuestion');
 const CodingSubmission = require('../models/CodingSubmission');
 const authenticate = require('../middleware/authMiddleware');
 const { runJudge0 } = require('../utils/judge0');
-const axios = require('axios');
 
 const router = express.Router();
-const OLLAMA_URL = process.env.OLLAMA_URL || 'http://ollama:11434';
 
-// Get all questions for a section
+// GET /questions
 router.get('/questions', authenticate, async (req, res) => {
   const { section } = req.query;
   try {
@@ -20,7 +18,7 @@ router.get('/questions', authenticate, async (req, res) => {
   }
 });
 
-// Submit code for grading
+// POST /submit
 router.post('/submit', authenticate, async (req, res) => {
   const { questionId, code, language } = req.body;
   const userId = req.user.id;
@@ -46,9 +44,6 @@ router.post('/submit', authenticate, async (req, res) => {
       if (judgeRes.stderr) suggestions.push("Errors: " + judgeRes.stderr);
       if (judgeRes.compile_output) suggestions.push("Compiler says: " + judgeRes.compile_output);
       if (statusDesc) suggestions.push("Status: " + statusDesc);
-      if (language === 'python' && !code.includes('def')) suggestions.push('Use Python functions for clean code.');
-      if (language === 'react' && !code.includes('useState')) suggestions.push('Try React hooks for state.');
-      if (language === 'mysql' && !code.toLowerCase().includes('select')) suggestions.push('Use SELECT to retrieve data.');
     } else {
       suggestions.push("Great job! Your code passed.");
     }
@@ -70,7 +65,7 @@ router.post('/submit', authenticate, async (req, res) => {
   }
 });
 
-// Get history
+// GET /history
 router.get('/history', authenticate, async (req, res) => {
   const userId = req.user.id;
   try {
@@ -82,7 +77,7 @@ router.get('/history', authenticate, async (req, res) => {
   }
 });
 
-// Delete a submission
+// DELETE /history/:id
 router.delete('/history/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
@@ -96,67 +91,35 @@ router.delete('/history/:id', authenticate, async (req, res) => {
   }
 });
 
-// AI question generation
+// POST /ai-question (static fallback)
 router.post('/ai-question', authenticate, async (req, res) => {
   const { section, difficulty } = req.body;
-  const sectionMap = {
-    python: "Python",
-    react: "JavaScript (ReactJS)",
-    mysql: "SQL"
+  const question = {
+    section,
+    title: `Sample ${section} problem`,
+    description: `Solve a ${difficulty} ${section} coding problem.`,
+    starterCode: "",
+    testCases: [{ input: "test", expectedOutput: "test" }],
+    difficulty
   };
-  const language = sectionMap[section] || "Python";
-
-  const prompt = `
-Generate a ${difficulty} ${language} coding interview problem as a JSON object with these keys:
-{
-  "title": "...",
-  "description": "...",
-  "starterCode": "...",
-  "testCases": [{"input": "...", "expectedOutput": "..."}, ...],
-  "difficulty": "${difficulty}",
-  "section": "${section}"
-}
-Only output the JSON object, no extra text.
-`;
-
-  try {
-    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, { model: "llama2", prompt });
-    let aiJSON = null;
-    try {
-      const match = ollamaRes.data.response.match(/\{[\s\S]*\}/);
-      aiJSON = JSON.parse(match[0]);
-    } catch (e) {
-      return res.status(500).json({ error: "Failed to parse Ollama response." });
-    }
-    res.json({ question: aiJSON });
-  } catch (err) {
-    console.error("Ollama question generation error:", err.message || err);
-    res.status(500).json({ error: "Failed to generate question." });
-  }
+  res.json({ question });
 });
 
-// Save AI question
+// POST /save-ai-question
 router.post('/save-ai-question', authenticate, async (req, res) => {
-  try {
-    const q = req.body.question;
-    if (!q.title || !q.description || !q.section) {
-      return res.status(400).json({ success: false, error: "Invalid question data" });
-    }
-
-    const saved = await CodingQuestion.create({
-      section: q.section,
-      title: q.title,
-      description: q.description,
-      starterCode: q.starterCode,
-      testCases: q.testCases,
-      difficulty: q.difficulty
-    });
-
-    res.json({ success: true, question: saved });
-  } catch (err) {
-    console.error("Save AI question error:", err);
-    res.status(500).json({ success: false, error: err.message });
+  const q = req.body.question;
+  if (!q.title || !q.description || !q.section) {
+    return res.status(400).json({ success: false, error: "Invalid question data" });
   }
+  const saved = await CodingQuestion.create({
+    section: q.section,
+    title: q.title,
+    description: q.description,
+    starterCode: q.starterCode,
+    testCases: q.testCases,
+    difficulty: q.difficulty
+  });
+  res.json({ success: true, question: saved });
 });
 
 module.exports = router;
