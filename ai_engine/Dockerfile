@@ -2,7 +2,6 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies for audio and scientific libs
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsndfile1 \
@@ -10,7 +9,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY requirements.txt .
 
-# Install dependencies without cache to save space
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
