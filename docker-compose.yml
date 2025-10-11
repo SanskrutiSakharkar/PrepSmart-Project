@@ -1,9 +1,6 @@
 version: '3.9'
 
 services:
-  # ------------------------------
-  # Frontend React app
-  # ------------------------------
   frontend:
     build: ./client
     ports:
@@ -12,11 +9,8 @@ services:
       - backend
     restart: always
     environment:
-      - REACT_APP_API_URL=/api
+      - REACT_APP_API_URL=http://backend:5000/api
 
-  # ------------------------------
-  # Node.js Backend
-  # ------------------------------
   backend:
     build: ./server
     env_file:
@@ -24,32 +18,21 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - ai_engine
       - mongo
+      - ai_engine
     environment:
       - AI_ENGINE_URL=http://ai_engine:8000
       - MONGODB_URI=mongodb://mongo:27017/prepsmart
     restart: always
 
-  # ------------------------------
-  # AI Engine (Flask)
-  # ------------------------------
   ai_engine:
     build: ./ai_engine
     env_file:
       - ./ai_engine/.env
     ports:
       - "8000:8000"
-    environment:
-      - FLASK_ENV=production
-    depends_on:
-      - backend
-      - mongo
     restart: always
 
-  # ------------------------------
-  # MongoDB Database
-  # ------------------------------
   mongo:
     image: mongo:6.0
     container_name: mongo
@@ -59,8 +42,5 @@ services:
     volumes:
       - mongo_data:/data/db
 
-# ------------------------------
-# Volumes
-# ------------------------------
 volumes:
   mongo_data:
