@@ -3,6 +3,7 @@ flask==2.3.3
 flask-cors==6.0.1
 
 # AI / NLP
+torch==2.2.0
 transformers==4.35.0
 sentence-transformers==2.2.2
 
@@ -12,7 +13,7 @@ numpy==1.26.0
 scipy==1.11.0
 soundfile==0.12.1
 audioread==3.0.0
-soxr==0.4.4
+soxr==0.5.0
 
 # General utilities
 requests==2.31.0
