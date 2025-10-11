@@ -11,29 +11,22 @@ export default function Login() {
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
 
-  // Use environment variable for backend API URL
-  const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5000";
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setStatus("");
-
     try {
-      const res = await axios.post(`${API_BASE}/api/auth/login`, {
-        email,
-        password,
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email, password
       });
-
       if (res.data?.token) {
-        // Save JWT to localStorage and context
         localStorage.setItem("token", res.data.token);
         setToken(res.data.token);
         navigate("/dashboard");
       } else {
-        setStatus("Invalid server response.");
+        setStatus("Invalid response from server.");
       }
     } catch (err) {
-      setStatus(err.response?.data?.msg || "Login failed.");
+      setStatus(err.response?.data?.msg || "Login failed. Try again.");
     }
   };
 
@@ -50,7 +43,8 @@ export default function Login() {
             autoFocus
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="you@email.com"
           />
           <label>Password</label>
           <input
@@ -58,22 +52,15 @@ export default function Login() {
             type="password"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Your password"
           />
         </div>
-
         {status && <div className="login-status">{status}</div>}
-
-        <button type="submit" className="login-btn">
-          Login
-        </button>
-
+        <button type="submit" className="login-btn">Login</button>
         <div className="login-alt">
           Don’t have an account?{" "}
-          <span
-            className="login-link"
-            onClick={() => navigate("/register")}
-          >
+          <span className="login-link" onClick={() => navigate("/register")}>
             Register here
           </span>
         </div>
