@@ -9,7 +9,7 @@ sentence-transformers==2.2.2
 
 # Audio processing
 librosa==0.10.2
-numpy==1.26.0
+numpy==1.25.2        # downgraded from 1.26.0 to avoid conflicts
 scipy==1.11.0
 soundfile==0.12.1
 audioread==3.0.0
