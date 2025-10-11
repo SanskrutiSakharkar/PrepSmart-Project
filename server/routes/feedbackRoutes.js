@@ -7,7 +7,7 @@ const router = express.Router();
 
 // Docker-friendly Ollama URL
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://ollama:11434';
-
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama2';
 /**
  * POST /api/feedback/save
  * Body: { matchScore, sentiment, emotion, fillerWords, keywordsMatched, missingKeywords, suggestions, context }
@@ -87,7 +87,7 @@ router.post('/ai', auth, async (req, res) => {
 
     try {
       const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-        model: 'llama-mini',  // <-- Use llama-mini
+        model: OLLAMA_MODEL,
         prompt
       });
 

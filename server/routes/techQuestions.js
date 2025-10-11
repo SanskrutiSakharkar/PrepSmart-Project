@@ -4,7 +4,7 @@ const axios = require('axios');
 const router = express.Router();
 
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://ollama:11434';
-
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama2';
 // --- Get all questions for a topic ---
 router.get('/', async (req, res) => {
   try {
@@ -27,7 +27,7 @@ router.post('/generate', async (req, res) => {
     let result = "Failed to get AI question.";
     try {
       const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-        model: "llama-mini",  // <-- Use llama-mini
+        model: OLLAMA_MODEL,
         prompt
       });
 
