@@ -58,41 +58,40 @@ export default function VoiceFeedback() {
       setStatus("Please upload a recording first.");
       return;
     }
+
+    setStatus("Analyzing...");
+
     try {
-      setStatus("Analyzing...");
       const formData = new FormData();
       formData.append("audio", file);
 
-      // --- CHANGE: Use relative path (no http://localhost:8000) ---
-      const response = await axios.post("/analyze/audio", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      // POST to your backend route (this route forwards to AI engine)
+      const response = await axios.post("/api/voice-feedback/analyze", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 60000, // allow longer processing time
       });
 
       setAnalysis(response.data);
-      setStatus("Analysis successful.");
-
-      // --- CHANGE: Use relative path (no http://localhost:5000) ---
-      await axios.post(
-        "/api/voice-feedback/save",
-        { ...response.data, audioFileName: file.name },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      setStatus("Analysis successful!");
     } catch (err) {
       console.error("Error analyzing or saving:", err);
-      setStatus("Analysis failed. Please try another recording.");
+      setStatus(
+        err.response?.data?.error || "Analysis failed. Please try another recording."
+      );
     }
   };
 
   const handleGenerateQuestions = async () => {
     try {
-      // --- CHANGE: Use relative path (no http://localhost:8000) ---
-      const res = await axios.get("/ollama/behavioral-questions");
+      const res = await axios.get("/api/voice-feedback/ai-questions", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
       if (res.data.questions) {
-        // Clean out unwanted JSON-like formatting
-        const cleaned = res.data.questions.map(q =>
-          q.replace(/^\{?"?question"?\s*:\s*"?/, "").replace(/"?\}?$/, "")
-        );
-        setQuestions(cleaned);
+        setQuestions(res.data.questions);
       }
     } catch (err) {
       console.error("Error generating questions:", err);
@@ -140,10 +139,9 @@ export default function VoiceFeedback() {
             <p><strong>Pitch:</strong> {analysis.pitch ? `${analysis.pitch.toFixed(2)} Hz` : "N/A"}</p>
             <p><strong>Energy:</strong> {analysis.energy ? `${(analysis.energy * 100).toFixed(1)}%` : "N/A"}</p>
             <p><strong>Tempo:</strong> {analysis.tempo ? `${analysis.tempo.toFixed(1)} BPM` : "N/A"}</p>
-
             <h4>Suggestions</h4>
             <ul className="fb-suggestions-list">
-              {analysis.suggestions.map((s, idx) => (
+              {analysis.suggestions?.map((s, idx) => (
                 <li key={idx}>{s}</li>
               ))}
             </ul>
