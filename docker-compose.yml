@@ -10,14 +10,16 @@ services:
     volumes:
       - mongo_data:/data/db
     healthcheck:
-      test: ["CMD-SHELL", "mongosh --eval 'db.adminCommand({ ping: 1 })' || exit 1"]
+      test: ["CMD-SHELL", "mongo --eval 'db.adminCommand(\"ping\")' || exit 1"]
       interval: 10s
       retries: 5
       timeout: 5s
       start_period: 10s
 
   ai_engine:
-    build: ./ai_engine
+    build:
+      context: ./ai_engine
+      dockerfile: Dockerfile
     container_name: ai_engine
     env_file: ./ai_engine/.env
     ports:
