@@ -64,7 +64,7 @@ router.get('/history', auth, async (req, res) => {
 
 /**
  * POST /api/feedback/ai
- * Generate AI-based personalized feedback using Ollama
+ * Generate AI-based personalized feedback using Ollama-mini
  * Body: { answer, question, topic }
  */
 router.post('/ai', auth, async (req, res) => {
@@ -87,7 +87,7 @@ router.post('/ai', auth, async (req, res) => {
 
     try {
       const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-        model: 'llama2',  // Must match the model installed in your Ollama container
+        model: 'llama-mini',  // <-- Use llama-mini
         prompt
       });
 

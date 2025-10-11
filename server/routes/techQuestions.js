@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
     const questions = await TechQuestion.find(filter).sort({ _id: -1 });
     res.json(questions);
   } catch (err) {
-    console.error("Fetch questions error:", err);
+    console.error("Fetch questions error:", err.message || err);
     res.status(500).json({ error: 'Server error while fetching questions' });
   }
 });
@@ -24,13 +24,21 @@ router.post('/generate', async (req, res) => {
     const { topic } = req.body;
     const prompt = `Generate a technical interview question for software engineering freshers, focused on ${topic}. Do not provide an answer, only the question.`;
 
-    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-      model: "llama2",
-      prompt
-    });
+    let result = "Failed to get AI question.";
+    try {
+      const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
+        model: "llama-mini",  // <-- Use llama-mini
+        prompt
+      });
 
-    const result = ollamaRes.data?.response || "Failed to get AI question.";
+      result = ollamaRes.data?.response || result;
+    } catch (err) {
+      console.error("Ollama call failed:", err.message);
+      if (err.response) console.error("Ollama response data:", err.response.data);
+    }
+
     res.json({ question: result.trim() });
+
   } catch (err) {
     console.error("Ollama question generation error:", err.message || err);
     res.status(500).json({ error: 'Failed to generate question.' });
