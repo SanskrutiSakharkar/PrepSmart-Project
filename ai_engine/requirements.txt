@@ -1,6 +1,6 @@
 # Flask server
 Flask==2.3.3
-Flask-Cors==3.1.2
+Flask-CORS==3.1.2
 
 # Audio analysis
 librosa==0.10.2

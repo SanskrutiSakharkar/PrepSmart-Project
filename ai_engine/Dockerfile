@@ -1,19 +1,24 @@
-# Use lightweight Python image
+# ========================
+# ai_engine/Dockerfile
+# ========================
+
+# Use a lightweight Python image
 FROM python:3.11-slim
 
-# Set working directory
+# Set working directory inside container
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+# Copy only requirements first to leverage Docker cache
 COPY requirements.txt .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Upgrade pip and install dependencies
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the AI engine code
+# Copy the rest of the application code
 COPY . .
 
-# Create uploads folder for audio or files
+# Create uploads folder for audio files
 RUN mkdir -p uploads
 
 # Expose Flask port
