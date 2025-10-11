@@ -1,6 +1,6 @@
 # Flask backend
 flask==2.3.3
-flask-cors==3.1.13
+flask-cors
 
 # Audio processing
 librosa==0.10.2
