@@ -4,6 +4,8 @@ const FeedbackResult = require('../models/FeedbackResult');
 const axios = require('axios');
 
 const router = express.Router();
+
+// Docker-friendly Ollama URL
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://ollama:11434';
 
 /**
@@ -61,13 +63,18 @@ router.get('/history', auth, async (req, res) => {
 });
 
 /**
- * Optional: Generate AI-based personalized feedback (future)
  * POST /api/feedback/ai
+ * Generate AI-based personalized feedback using Ollama
  * Body: { answer, question, topic }
  */
 router.post('/ai', auth, async (req, res) => {
   try {
     const { answer, question, topic } = req.body;
+
+    if (!answer || !question || !topic) {
+      return res.status(400).json({ msg: "Missing question, answer, or topic" });
+    }
+
     const prompt = `
       You are an expert interviewer for ${topic}.
       Question: "${question}"
@@ -75,13 +82,23 @@ router.post('/ai', auth, async (req, res) => {
       Provide a brief review, improvement suggestions, and a 1-5 score in 3 lines.
     `;
 
-    const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
-      model: 'llama2',
-      prompt
-    });
+    // Fallback in case Ollama fails
+    let feedback = "AI feedback temporarily unavailable.";
 
-    const feedback = ollamaRes.data?.response || 'AI feedback not available.';
+    try {
+      const ollamaRes = await axios.post(`${OLLAMA_URL}/api/generate`, {
+        model: 'llama2',  // Must match the model installed in your Ollama container
+        prompt
+      });
+
+      feedback = ollamaRes.data?.response || feedback;
+    } catch (err) {
+      console.error("Ollama call failed:", err.message);
+      if (err.response) console.error("Ollama response data:", err.response.data);
+    }
+
     res.json({ feedback: feedback.trim() });
+
   } catch (err) {
     console.error('AI feedback generation error:', err.message || err);
     res.status(500).json({ msg: 'Failed to generate AI feedback' });
