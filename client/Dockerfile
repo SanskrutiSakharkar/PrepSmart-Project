@@ -1,13 +1,13 @@
-FROM node:20-alpine AS build
+# Stage 1: build React app
+FROM node:20-alpine as build
 
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm install
-
-COPY . ./
+COPY . .
 RUN npm run build
 
-# Optional: lightweight nginx image for production
+# Stage 2: serve with nginx
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
