@@ -20,7 +20,7 @@ connectDB();
 // CORS middleware (adjust origin if needed)
 // server.js
 app.use(cors({
-  origin: ["http://localhost:3000", "http://52.207.242.133"],
+  origin: ["http://localhost:3000", "http://54.221.107.160"],
   credentials: false
 }));
 
