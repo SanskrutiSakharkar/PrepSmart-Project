@@ -4,8 +4,8 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import "./Login.css";
 
-// Load backend URL from environment variable
-const API_URL = process.env.REACT_APP_API_URL;
+// Use API URL from env
+const API_URL = process.env.REACT_APP_API_URL || "/api";
 
 export default function Login() {
   const { setToken } = useContext(AuthContext);
@@ -19,8 +19,8 @@ export default function Login() {
     setStatus("");
 
     try {
-      const res = await axios.post(`${API_URL}/api/auth/login`, { email, password });
-      
+      const res = await axios.post(`${API_URL}/auth/login`, { email, password });
+
       if (res.data?.token) {
         localStorage.setItem("token", res.data.token);
         setToken(res.data.token);
