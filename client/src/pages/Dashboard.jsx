@@ -34,22 +34,109 @@ export default function Dashboard() {
         </div>
       </section>
 
+    {/* ===== Feature Cards ===== */}
       <section className="dashboard-stats">
-        {[
-          { img: "/uploadresume.png", title: "Resume–JD Match", desc: "Analyze your resume against job descriptions.", btn: "/upload" },
-          { img: "/aifeedback.png", title: "Behavioral AI Feedback", desc: "Get actionable AI feedback on STAR answers.", btn: "/feedback" },
-          { img: "/uploadvoice.png", title: "Voice Analysis", desc: "Analyze tone, energy, and confidence.", btn: "/voice-feedback" },
-          { img: "/codinground.png", title: "Coding Round", desc: "Practice coding questions with evaluation.", btn: "/techround" },
-          { img: "/techqa.png", title: "Technical Q&A", desc: "Answer or generate technical interview questions.", btn: "/answer-questions" },
-          { img: "/progress.png", title: "Track Your Progress", desc: "View charts and stats of skill growth.", btn: "/progress" },
-        ].map((card, idx) => (
-          <div className="dashboard-card" key={idx}>
-            <img src={card.img} alt={card.title} className="dashboard-card-img"/>
-            <h2>{card.title}</h2>
-            <p>{card.desc}</p>
-            <button className="dashboard-red-btn" onClick={() => navigate(card.btn)}>Go</button>
-          </div>
-        ))}
+        {/* Resume–JD Match */}
+        <div className="dashboard-card">
+          <img
+            src="/uploadresume.png"
+            alt="Resume upload illustration"
+            className="dashboard-card-img"
+          />
+          <h2>Resume–JD Match</h2>
+          <p>
+            Analyze your resume against job descriptions and get actionable AI tips to boost your
+            match score.
+          </p>
+          <button className="dashboard-red-btn" onClick={() => goTo("/upload")}>
+            Run AI Match
+          </button>
+        </div>
+
+        {/* Behavioral AI Feedback */}
+        <div className="dashboard-card">
+          <img
+            src="/aifeedback.png"
+            alt="AI feedback illustration"
+            className="dashboard-card-img"
+          />
+          <h2>Behavioral AI Feedback</h2>
+          <p>
+            Get instant, actionable feedback on your STAR and behavioral interview responses using
+            AI-driven insights.
+          </p>
+          <button className="dashboard-red-btn" onClick={() => goTo("/feedback")}>
+            Get Feedback
+          </button>
+        </div>
+
+        {/* Voice Analysis */}
+        <div className="dashboard-card">
+          <img
+            src="/uploadvoice.png"
+            alt="Voice analysis illustration"
+            className="dashboard-card-img"
+          />
+          <h2>Voice Analysis</h2>
+          <p>
+            Upload a voice sample and receive emotion, tone, and confidence insights from our AI
+            voice analyzer.
+          </p>
+          <button className="dashboard-red-btn" onClick={() => goTo("/voice-feedback")}>
+            Try Voice Analysis
+          </button>
+        </div>
+
+        {/* Coding Round */}
+        <div className="dashboard-card">
+          <img
+            src="/codinground.png"
+            alt="Coding round illustration"
+            className="dashboard-card-img"
+          />
+          <h2>Coding Round</h2>
+          <p>
+            Practice real-world coding interview questions with instant evaluation, execution, and
+            improvement suggestions.
+          </p>
+          <button className="dashboard-red-btn" onClick={() => goTo("/techround")}>
+            Start Coding
+          </button>
+        </div>
+
+        {/* Technical Q&A */}
+        <div className="dashboard-card">
+          <img
+            src="/techqa.png"
+            alt="Technical Q&A illustration"
+            className="dashboard-card-img"
+          />
+          <h2>Technical Q&amp;A</h2>
+          <p>
+            Answer or generate technical interview questions across Python, SQL, React, and more
+            using AI.
+          </p>
+          <button className="dashboard-red-btn" onClick={() => goTo("/answer-questions")}>
+            Start Tech Q&amp;A
+          </button>
+        </div>
+
+        {/* Progress Tracking */}
+        <div className="dashboard-card">
+          <img
+            src="/progress.png"
+            alt="Progress tracking illustration"
+            className="dashboard-card-img"
+          />
+          <h2>Track Your Progress</h2>
+          <p>
+            View charts and insights of your growth, coding accuracy, communication clarity, and
+            readiness over time.
+          </p>
+          <button className="dashboard-red-btn" onClick={() => goTo("/progress")}>
+            View Progress
+          </button>
+        </div>
       </section>
     </div>
   );
