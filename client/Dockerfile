@@ -1,14 +1,13 @@
-# Serve pre-built React frontend with nginx
+# Stage 1: Build React app
+FROM node:18 AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2: Nginx to serve React
 FROM nginx:alpine
-
-# Copy the production build folder from your EC2 project directory
-COPY build/ /usr/share/nginx/html
-
-# Copy custom Nginx config if you have one
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
+COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
-
-# Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
