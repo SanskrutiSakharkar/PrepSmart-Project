@@ -59,7 +59,8 @@ services:
     ports:
       - "80:80"         
     volumes:
-      - ./client/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+          - ./client/build:/usr/share/nginx/html:ro
+          - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
 
 volumes:
   prepsmart-project_mongo_data:

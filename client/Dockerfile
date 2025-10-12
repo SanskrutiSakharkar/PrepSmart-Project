@@ -1,14 +1,14 @@
-# Use Nginx to serve static React files
+# client/Dockerfile
 FROM nginx:alpine
 
-# Copy prebuilt React app
+# Copy React build
 COPY build/ /usr/share/nginx/html
 
-# Copy custom Nginx config
+# Copy custom nginx config
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80
 
-# Start Nginx
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
