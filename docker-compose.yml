@@ -19,7 +19,7 @@ services:
     depends_on:
       - mongo
     expose:
-      - "8000"   # internal only
+      - "8000"
     volumes:
       - ./ai_engine/uploads:/app/uploads
 
@@ -46,7 +46,7 @@ services:
     depends_on:
       - backend
     expose:
-      - "3000"
+      - "80"
 
   nginx:
     image: nginx:alpine
