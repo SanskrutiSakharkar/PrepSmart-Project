@@ -19,7 +19,7 @@ services:
     depends_on:
       - mongo
     expose:
-      - "8000"
+      - "8000"   # internal only
     volumes:
       - ./ai_engine/uploads:/app/uploads
 

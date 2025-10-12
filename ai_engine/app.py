@@ -296,6 +296,11 @@ def get_behavioral_questions():
 def health():
     return jsonify({"ok": True})
 
+@app.route("/analyze/test", methods=["GET"])
+def analyze_test():
+    return jsonify({"ok": True, "msg": "AI Engine reachable"})
+
+
 # ---------------------------------------------------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
