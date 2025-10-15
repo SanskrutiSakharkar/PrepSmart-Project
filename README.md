@@ -19,7 +19,7 @@ explainable feedback and visual progress tracking.**
 - **Coding Round Evaluation**
   - Attempt coding problems in your favorite language. Submissions are auto-graded using Judge0, with instant feedback on test case success, errors, and efficiency.
 - **Voice-Based Behavioral Interview Analysis**
-  - Record or upload answers to behavioral interview questions. The platform analyzes speech for filler words, sentiment, clarity, and structure—offering tips to improve delivery.
+  - Record or upload answers to behavioral interview questions. The platform analyzes speech for filler words, sentiment, clarity, and structure - offering tips to improve delivery.
 - **Personalized, Explainable Feedback**
   - All feedback is generated using transparent, rule-based logic based on your submissions—no black box AI or hallucinations.
 - **Progress Dashboard**
@@ -69,7 +69,7 @@ explainable feedback and visual progress tracking.**
 - **Outputs:**  
   - Pass/fail by test case  
   - Hints for fixing errors  
-  - Code quality tips (if applicable)
+  - Code quality tips
 
 ### 4. Voice-Based Behavioral Analysis
 - User records or uploads audio.
@@ -93,7 +93,7 @@ explainable feedback and visual progress tracking.**
 - Frontend (React + Recharts) displays:
   - Score histories
   - Progress graphs (resume–JD, coding, behavioral)
-  - Downloadable reports (future)
+
 
 
 
