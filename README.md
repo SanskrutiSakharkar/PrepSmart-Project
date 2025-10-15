@@ -27,18 +27,17 @@ explainable feedback and visual progress tracking.**
 - **Secure & Privacy-Focused**
   - All data processing and feedback generation are performed locally—no sensitive data is sent to third-party AI services.
 
----
 
 ##  System Architecture
 
-[User Upload/Record] ->  [Frontend (React.js)]
-|
+[User Upload/Record] → [Frontend (React.js)]
+↓
 [Backend API (Node.js, Flask)]
-|
+↓
 [NLP Analysis (Python), Judge0 for code, MongoDB for storage]
-|
+↓
 [Rule-based Feedback Engine]
-|
+↓
 [Frontend Dashboard & Feedback]
 
 
@@ -115,6 +114,7 @@ explainable feedback and visual progress tracking.**
 ### 1. Clone the repository
 
 git clone https://github.com/SanskrutiSakharkar/PrepSmart-Project.git
+
 cd prepsmart
 
 ### 2. Install Dependencies
