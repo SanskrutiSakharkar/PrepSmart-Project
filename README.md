@@ -86,7 +86,7 @@ explainable feedback and visual progress tracking.**
 ### 5. Personalized Feedback Generation
 - Uses deterministic, template-based logic.
 - Every suggestion is **directly tied to analysis results** (e.g., "missing Python, REST API").
-- No external LLMs or generative AI—**100% explainable, transparent, and privacy-focused**.
+- No external LLMs or generative AI, **100% explainable, transparent, and privacy-focused**.
 
 ### 6. Progress Dashboard
 - MongoDB stores user attempts, scores, and feedback.
@@ -101,13 +101,13 @@ explainable feedback and visual progress tracking.**
 
 | Layer      | Technology                            |
 |------------|---------------------------------------|
-| Frontend   | React.js, Tailwind CSS, Recharts      |
+| Frontend   | React.js,CSS, Recharts                |
 | Backend    | Node.js (Express), Python (Flask)     |
 | NLP/Voice  | Sentence Transformers, spaCy, librosa,|
 |            |  Google Speech-to-Text                |
 | Code Judge | Judge0 API                            |
 | Database   | MongoDB Atlas                         |
-| DevOps     | Docker, Railway/AWS EC2               |
+| DevOps     | Docker, AWS EC2, Github                       |
 
 ##  Getting Started
 
