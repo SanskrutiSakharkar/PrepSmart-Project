@@ -1,6 +1,6 @@
 # PREPSMART: Interview Feedback Using Voice and AI
 
----
+
 
 ## Overview
 
@@ -8,7 +8,7 @@
 The platform empowers users to analyze and improve their resumes, match them with job descriptions, practice technical and coding questions, and sharpen their behavioral answers, **all with instant, 
 explainable feedback and visual progress tracking.**
 
----
+
 
 ##  Features
 
@@ -29,20 +29,20 @@ explainable feedback and visual progress tracking.**
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
-[User Upload/Record] → [Frontend (React.js)]
-↓
+[User Upload/Record] ->  [Frontend (React.js)]
+|
 [Backend API (Node.js, Flask)]
-↓
+|
 [NLP Analysis (Python), Judge0 for code, MongoDB for storage]
-↓
+|
 [Rule-based Feedback Engine]
-↓
+|
 [Frontend Dashboard & Feedback]
 
 
-## ⚙️ How It Works
+##  How It Works
 
 ### 1. Resume–JD Analysis
 - Extracts text from both documents.
@@ -98,7 +98,7 @@ explainable feedback and visual progress tracking.**
 
 
 
-## 🖥️ Tech Stack
+## Tech Stack
 
 | Layer      | Technology                            |
 |------------|---------------------------------------|
@@ -110,7 +110,7 @@ explainable feedback and visual progress tracking.**
 | Database   | MongoDB Atlas                         |
 | DevOps     | Docker, Railway/AWS EC2               |
 
-## 🔧 Getting Started
+##  Getting Started
 
 ### 1. Clone the repository
 
